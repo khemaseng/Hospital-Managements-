@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.hms.controller.UserManagementController" spacing="16">
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="System accounts with access to this application." styleClass="muted"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="resultCountLabel" styleClass="muted"/>
+        <Button text="+ Add User" styleClass="btn-primary" onAction="#handleAdd"/>
+    </HBox>
+
+    <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colUsername" text="Username" prefWidth="140"/>
+            <TableColumn fx:id="colFullName" text="Full Name" prefWidth="180"/>
+            <TableColumn fx:id="colRole" text="Role" prefWidth="120"/>
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="220"/>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
+        </columns>
+        <padding><Insets top="4" right="4" bottom="4" left="4"/></padding>
+    </TableView>
+</VBox>

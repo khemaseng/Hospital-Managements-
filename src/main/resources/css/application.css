@@ -1,0 +1,372 @@
+/* Hospital Management System - Light Theme
+   Soft clinical palette: teal accent, white surfaces, slate text. */
+
+.root {
+    -fx-accent: #0f9d8c;
+    -fx-primary: #0f9d8c;
+    -fx-bg: #f4f7f9;
+    -fx-surface: #ffffff;
+    -fx-text-main: #1f2937;
+    -fx-text-muted: #6b7280;
+    -fx-border-soft: #e5e7eb;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-background-color: -fx-bg;
+}
+
+/* ===== Layout shells ===== */
+.sidebar {
+    -fx-background-color: #123b3a;
+}
+.sidebar-title {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+.sidebar-subtitle {
+    -fx-text-fill: #9fd8cf;
+    -fx-font-size: 11px;
+}
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #d4ece8;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 16 10 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.sidebar-button:hover {
+    -fx-background-color: #1c5652;
+}
+.sidebar-button-active {
+    -fx-background-color: #0f9d8c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.topbar {
+    -fx-background-color: -fx-surface;
+    -fx-border-color: transparent transparent -fx-border-soft transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 20 10 20;
+}
+
+.content-area {
+    -fx-background-color: -fx-bg;
+    -fx-padding: 20;
+}
+
+/* ===== Cards ===== */
+.card {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 14;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.08), 12, 0, 0, 4);
+}
+.card-title {
+    -fx-text-fill: -fx-text-muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+.card-value {
+    -fx-text-fill: -fx-text-main;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+.card-icon-bg {
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+}
+
+/* ===== Dashboard stat cards (icon-badge style) ===== */
+.stat-card {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 14;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.08), 12, 0, 0, 4);
+}
+.stat-icon-badge {
+    -fx-min-width: 36;
+    -fx-min-height: 36;
+    -fx-max-width: 36;
+    -fx-max-height: 36;
+    -fx-background-radius: 50%;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.18), 4, 0, 0, 2);
+}
+/* A single cohesive brand-family palette (teal/navy/slate) rather than
+   saturated, unrelated hues - keeps every card visually related instead
+   of reading as a mismatched rainbow. Each uses a subtle two-stop
+   gradient rather than a flat fill, for a touch of dimensionality. */
+.stat-badge-teal {
+    -fx-background-color: linear-gradient(to bottom right, #17b3a0, #0c7d6f);
+}
+.stat-badge-navy {
+    -fx-background-color: linear-gradient(to bottom right, #1c3f52, #0d2530);
+}
+.stat-badge-slate-blue {
+    -fx-background-color: linear-gradient(to bottom right, #4f7ea8, #2c5273);
+}
+.stat-badge-steel {
+    -fx-background-color: linear-gradient(to bottom right, #5c6f85, #37485c);
+}
+.stat-badge-deep-teal {
+    -fx-background-color: linear-gradient(to bottom right, #0d8577, #0a5c52);
+}
+.stat-watermark-icon {
+    -fx-opacity: 0.16;
+}
+
+/* ===== Notification bell badge ===== */
+.notification-badge {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 1 5 1 5;
+    -fx-translate-x: 6;
+    -fx-translate-y: -6;
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+    -fx-background-color: #0f9d8c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+.btn-primary:hover {
+    -fx-background-color: #0c8375;
+}
+.btn-secondary {
+    -fx-background-color: -fx-surface;
+    -fx-text-fill: -fx-text-main;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+.btn-secondary:hover {
+    -fx-background-color: #f0f2f5;
+}
+.btn-danger {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+    -fx-border-color: #fecaca;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+.btn-danger:hover {
+    -fx-background-color: #fee2e2;
+}
+
+/* ===== Inputs ===== */
+.text-field, .password-field, .combo-box, .date-picker, .text-area {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 8;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-radius: 8;
+    -fx-padding: 6 10 6 10;
+}
+.text-field:focused, .password-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: -fx-accent;
+}
+.search-box {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 20;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-radius: 20;
+    -fx-padding: 6 14 6 14;
+}
+
+/* ===== Table ===== */
+.table-view {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 12;
+    -fx-padding: 4;
+}
+.table-view .column-header-background {
+    -fx-background-color: #f3f6f7;
+    -fx-background-radius: 10 10 0 0;
+}
+.table-view .column-header-background .label {
+    -fx-text-fill: -fx-text-muted;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+.table-row-cell {
+    -fx-background-color: -fx-surface;
+    -fx-border-color: transparent transparent #f0f2f5 transparent;
+}
+.table-row-cell:selected {
+    -fx-background-color: #e6f6f3;
+}
+.table-row-cell:hover {
+    -fx-background-color: #f8fafb;
+}
+
+/* ===== Badges (appointment status / gender / etc.) ===== */
+.badge {
+    -fx-padding: 3 10 3 10;
+    -fx-background-radius: 20;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+.badge-scheduled { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1; }
+.badge-completed { -fx-background-color: #dcfce7; -fx-text-fill: #15803d; }
+.badge-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #b91c1c; }
+.badge-noshow    { -fx-background-color: #fef3c7; -fx-text-fill: #92400e; }
+
+/* ===== Login screen ===== */
+.login-root {
+    /* Fallback only - the visible background is painted by BlueprintBackgroundPainter
+       onto the Canvas, since a plain CSS color can't render the grid/building
+       artwork. This shows only for an instant before the first paint. */
+    -fx-background-color: #1b2b38;
+}
+.login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 40, 0, 0, 14);
+}
+.login-brand {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f9d8c;
+}
+.login-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -fx-text-main;
+}
+.login-subtitle {
+    -fx-text-fill: -fx-text-muted;
+    -fx-font-size: 12px;
+}
+.error-text {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 12px;
+}
+
+/* Vector gear + medical-cross logo, built entirely from shapes (no image
+   asset, no emoji/font dependency - confirmed on real hardware that emoji
+   glyphs don't reliably render in JavaFX, so every icon in this app is a
+   hand-built Shape). The gear is an 8-tooth flat-top Polygon computed once
+   at a 100x100 reference size (see IconFactory.GEAR_POINTS_100) and reused
+   at different sizes via Group scaleX/scaleY. */
+.logo-gear-teeth {
+    -fx-fill: linear-gradient(from 15% 10% to 90% 95%, #a7b2c0 0%, #5b6d84 45%, #263850 100%);
+}
+.logo-gear-bore {
+    -fx-fill: #f7f9fa;
+}
+.logo-cross-outline {
+    -fx-fill: white;
+}
+.logo-cross {
+    -fx-fill: linear-gradient(to bottom right, #34c3af, #1b8577);
+}
+.logo-gear-teeth-sidebar {
+    -fx-fill: linear-gradient(from 15% 10% to 90% 95%, #7d92b3 0%, #4c6790 45%, #24395a 100%);
+}
+.logo-gear-bore-sidebar {
+    -fx-fill: #123b3a;
+}
+
+/* ===== General-purpose vector icon shapes (sidebar nav, top bar, dashboard) =====
+   Two palettes: light-on-dark (sidebar) and dark-on-light (everywhere else). */
+.icon-shape-light {
+    -fx-fill: #d4ece8;
+}
+.icon-shape-light-stroke {
+    -fx-fill: transparent;
+    -fx-stroke: #d4ece8;
+    -fx-stroke-width: 1.6;
+}
+.icon-shape-dark {
+    -fx-fill: #4b5563;
+}
+.icon-shape-dark-stroke {
+    -fx-fill: transparent;
+    -fx-stroke: #4b5563;
+    -fx-stroke-width: 1.6;
+}
+.icon-shape-white {
+    -fx-fill: white;
+}
+.icon-shape-white-stroke {
+    -fx-fill: transparent;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.6;
+}
+.moon-bite {
+    -fx-fill: -fx-surface;
+}
+
+/* Icon-prefixed input fields (username/password on the login screen) */
+.input-with-icon {
+    -fx-background-color: #f3f5f7;
+    -fx-background-radius: 8;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-radius: 8;
+    -fx-padding: 4 10 4 10;
+}
+.input-with-icon:focus-within {
+    -fx-border-color: -fx-accent;
+}
+.input-icon {
+    -fx-opacity: 0.6;
+    -fx-font-size: 13px;
+}
+.field-icon-bg {
+    -fx-fill: #9aa5b1;
+}
+.field-icon-fg {
+    -fx-fill: #f3f5f7;
+}
+.field-icon-shackle-stroke {
+    -fx-fill: transparent;
+    -fx-stroke: #9aa5b1;
+    -fx-stroke-width: 2;
+}
+.input-borderless {
+    -fx-background-color: transparent, transparent;
+    -fx-background-insets: 0, 0;
+    -fx-border-color: transparent;
+    -fx-padding: 6 0 6 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-prompt-text-fill: #9aa5b1;
+}
+/* Higher specificity than the global ".text-field:focused" rule above,
+   which would otherwise paint a teal border on these fields when focused. */
+.input-borderless:focused {
+    -fx-border-color: transparent;
+    -fx-background-insets: 0, 0;
+}
+.icon-toggle-button {
+    -fx-background-color: transparent;
+    -fx-padding: 2 4 2 4;
+    -fx-cursor: hand;
+    -fx-opacity: 0.6;
+}
+.icon-toggle-button:hover {
+    -fx-opacity: 1;
+}
+
+/* ===== Misc text ===== */
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-main;
+}
+.muted {
+    -fx-text-fill: -fx-text-muted;
+}
