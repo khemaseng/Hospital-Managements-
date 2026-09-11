@@ -44,18 +44,18 @@ Emoji icons were confirmed (via a real screenshot from the actual Windows/JavaFX
 
 | Module | Status |
 |---|---|
-| Auth / Sessions / Roles / Profile Pictures / Password Change / Forgot Password | ✅ Fully working |
-| Dashboard (trend chart, quick actions, room strip) | ✅ Fully working |
-| Patients CRUD + pagination + Excel export | ✅ Fully working |
-| Doctors CRUD + pagination + Excel export | ✅ Fully working |
-| Appointments + conflict prevention + Excel export | ✅ Fully working |
-| Room / Ward Management + admit/discharge | ✅ Fully working |
-| Medical Records (symptoms + diagnosis fields) | ✅ Fully working |
-| Billing / Invoices + payment status + Excel export | ✅ Fully working; no PDF export |
-| Reports + Excel/text export | ✅ Charts + range filter + Excel + plain-text export; no PDF export |
-| User Account Management | ✅ Create + list accounts (Admin only); no edit/deactivate UI yet |
-| Audit Log | ✅ Fully working (Admin only, read-only view) |
-| Notifications | ✅ Computed live from appointment data; no push/desktop notifications |
+| Auth / Sessions / Roles / Profile Pictures / Password Change / Forgot Password 
+| Dashboard (trend chart, quick actions, room strip) 
+| Patients CRUD + pagination + Excel export
+| Doctors CRUD + pagination + Excel export 
+| Appointments + conflict prevention + Excel export 
+| Room / Ward Management + admit/discharge
+| Medical Records (symptoms + diagnosis fields) 
+| Billing / Invoices + payment status + Excel export | Fully working; no PDF export |
+| Reports + Excel/text export | Charts + range filter + Excel + plain-text export; no PDF export |
+| User Account Management | Create + list accounts (Admin only); no edit/deactivate UI yet |
+| Audit Log | Fully working (Admin only, read-only view) |
+| Notifications | Computed live from appointment data; no push/desktop notifications |
 | CSV import/export | Not implemented |
 
 Everything above was verified by actually compiling and running the code (see "What was actually tested" below) — not just read through. PDF export specifically was left out; it would require adding a PDF-writing library (e.g. Apache PDFBox) that couldn't be fully verified in the sandboxed environment this was built in (same class of limitation as the Excel export note above). The on-screen receipt in Billing and the Excel/text exports in Reports cover the same underlying data in the meantime.
@@ -121,5 +121,6 @@ Because MySQL/IntelliJ aren't available in the environment this was built in, ve
 - Two real bugs were caught and fixed during this build (not found by inspection — found by running the code): the packaged SQLite JDBC driver doesn't implement `getGeneratedKeys()` after `RETURN_GENERATED_KEYS` (fixed with `SELECT last_insert_rowid()`), and a missing closing brace introduced while wiring the dashboard's navigation callbacks (caught immediately by the next compile).
 
 See `docs/INSTALLATION_GUIDE.md` for the exact commands used, so you can reproduce this on your own machine.
-#   H o s p i t a l - M a n a g e m e n t s -  
+#   H o s p i t a l - M a n a g e m e n t s - 
+ 
  
