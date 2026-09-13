@@ -89,21 +89,21 @@ public class MainLayoutController {
      */
     private void buildIcons() {
 //        sidebarLogoContainer.getChildren().add(IconFactory.gearCrossLogo(56, true));
-//        searchIconContainer.getChildren().add(IconFactory.search(14, "icon-shape-dark"));
-//        notificationButton.setGraphic(IconFactory.bell(15, "icon-shape-dark"));
-//        themeToggleButton.setGraphic(IconFactory.moon(15, "icon-shape-dark"));
-//
-//        navDashboard.setGraphic(IconFactory.grid(NAV_ICON_SIZE, "icon-shape-light"));
-//        navPatients.setGraphic(IconFactory.person(NAV_ICON_SIZE, "icon-shape-light"));
-//        navDoctors.setGraphic(IconFactory.doctorPerson(NAV_ICON_SIZE, "icon-shape-light", "icon-shape-light"));
-//        navAppointments.setGraphic(IconFactory.calendar(NAV_ICON_SIZE, "icon-shape-light"));
-//        navRooms.setGraphic(IconFactory.bed(NAV_ICON_SIZE, "icon-shape-light"));
-//        navMedicalRecords.setGraphic(IconFactory.clipboard(NAV_ICON_SIZE, "icon-shape-light"));
-//        navBilling.setGraphic(IconFactory.cash(NAV_ICON_SIZE, "icon-shape-light"));
-//        navReports.setGraphic(IconFactory.barChart(NAV_ICON_SIZE, "icon-shape-light"));
-//        navUsers.setGraphic(IconFactory.person(NAV_ICON_SIZE, "icon-shape-light"));
-//        navAuditLog.setGraphic(IconFactory.shield(NAV_ICON_SIZE, "icon-shape-light"));
-//        navLogout.setGraphic(IconFactory.logout(NAV_ICON_SIZE, "icon-shape-light"));
+        searchIconContainer.getChildren().add(IconFactory.search(14, "icon-shape-dark"));
+        notificationButton.setGraphic(IconFactory.bell(15, "icon-shape-dark"));
+        themeToggleButton.setGraphic(IconFactory.moon(15, "icon-shape-dark"));
+
+        navDashboard.setGraphic(IconFactory.grid(NAV_ICON_SIZE, "icon-shape-light"));
+        navPatients.setGraphic(IconFactory.person(NAV_ICON_SIZE, "icon-shape-light"));
+        navDoctors.setGraphic(IconFactory.doctorPerson(NAV_ICON_SIZE, "icon-shape-light", "icon-shape-light"));
+        navAppointments.setGraphic(IconFactory.calendar(NAV_ICON_SIZE, "icon-shape-light"));
+        navRooms.setGraphic(IconFactory.bed(NAV_ICON_SIZE, "icon-shape-light"));
+        navMedicalRecords.setGraphic(IconFactory.clipboard(NAV_ICON_SIZE, "icon-shape-light"));
+        navBilling.setGraphic(IconFactory.cash(NAV_ICON_SIZE, "icon-shape-light"));
+        navReports.setGraphic(IconFactory.barChart(NAV_ICON_SIZE, "icon-shape-light"));
+        navUsers.setGraphic(IconFactory.person(NAV_ICON_SIZE, "icon-shape-light"));
+        navAuditLog.setGraphic(IconFactory.shield(NAV_ICON_SIZE, "icon-shape-light"));
+        navLogout.setGraphic(IconFactory.logout(NAV_ICON_SIZE, "icon-shape-light"));
     }
 
     private void registerNavigationBus() {
