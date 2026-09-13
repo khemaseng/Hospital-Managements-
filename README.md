@@ -1,4 +1,4 @@
-# 🏥 Hospital Management System (HMS)
+# Hospital Management System (HMS)
 
 A desktop Hospital Management System built with **Java 21** and **JavaFX 21**, following the **MVC architecture** with a service/repository layered backend and an embedded **SQLite database**.
 
