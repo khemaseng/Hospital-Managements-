@@ -1,40 +1,101 @@
+
 package com.hms.util;
 
 import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.*;
 
 /**
- * Every icon in this application is built here as plain JavaFX Shapes
- * (Circle/Rectangle/Polygon/Line), not emoji or an image font.
- *
- * Why: emoji glyphs were confirmed (via real screenshots on the actual
- * target machine, not just "no exception thrown") to render as blank boxes
- * in JavaFX in this project. Vector shapes render identically on every
- * platform/JVM because they don't depend on any font having the right
- * glyph - the same reasoning already applied to the login screen's logo
- * and field icons is now applied everywhere else.
- *
- * Every method returns a small Group sized to fit within roughly
- * `size` x `size` and colored via a CSS style class (see the
- * ".icon-shape-*" rules in application.css), so callers control both size
- * and theme-appropriate color without touching this class.
+ * Programmatic vector icon engine built on JavaFX native Shapes
+ * (Circle, Rectangle, Polygon, Line, Path), preventing missing assets
+ * and low-DPI scaling blur.
  */
 public final class IconFactory {
 
     private IconFactory() {
     }
 
-    // ---- Logo -------------------------------------------------------
+    // ---- Modern Hospital & Clinical Logos ----------------------------
 
     /**
-     * The gear + medical-cross brand mark: a solid circular gear body with
-     * individually placed and rotated rectangular teeth (far more robust
-     * than a single hand-computed gear polygon, which is prone to subtle
-     * winding-order bugs), plus a large teal cross overlaid across the
-     * center with arms extending past the gear's own edge - matching the
-     * reference mark. Built at a 100-unit reference size and scaled to the
-     * requested size via Group scale.
+     * Modern clinical shield & cross logo.
+     * Ideal for replacing outdated text headers in the sidebar and login cards.
+     *
+     * @param size Base width and height of the rendered logo
+     * @param sidebarPalette true if rendering on dark green/teal sidebar; false for light surfaces
      */
+    public static Group medicalShieldLogo(double size, boolean sidebarPalette) {
+        // Base shield path (normalized to 100x100)
+        SVGPath shield = new SVGPath();
+        shield.setContent("M 50,6 " +
+                "C 74,6 90,14 90,26 " +
+                "C 90,56 74,82 50,94 " +
+                "C 26,82 10,56 10,26 " +
+                "C 10,14 26,6 50,6 Z");
+
+        LinearGradient gradient;
+        if (sidebarPalette) {
+            gradient = new LinearGradient(
+                    0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                    new Stop(0, Color.web("#2dd4bf")),
+                    new Stop(1, Color.web("#0d9488"))
+            );
+        } else {
+            gradient = new LinearGradient(
+                    0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                    new Stop(0, Color.web("#14b8a6")),
+                    new Stop(1, Color.web("#0f766e"))
+            );
+        }
+        shield.setFill(gradient);
+
+        // Inner medical cross (+)
+        SVGPath cross = new SVGPath();
+        cross.setContent("M 43,28 " +
+                "L 57,28 A 3,3 0 0 1 60,31 L 60,43 L 72,43 A 3,3 0 0 1 75,46 L 75,54 A 3,3 0 0 1 72,57 L 60,57 L 60,69 A 3,3 0 0 1 57,72 L 43,72 A 3,3 0 0 1 40,69 L 40,57 L 28,57 A 3,3 0 0 1 25,54 L 25,46 A 3,3 0 0 1 28,43 L 40,43 L 40,31 A 3,3 0 0 1 43,28 Z");
+        cross.setFill(Color.WHITE);
+
+        Group group = new Group(shield, cross);
+        double scale = size / 100.0;
+        group.setScaleX(scale);
+        group.setScaleY(scale);
+        group.setTranslateX(-50 * (1 - scale));
+        group.setTranslateY(-50 * (1 - scale));
+        return group;
+    }
+
+    /**
+     * Standalone modern hospital cross badge.
+     */
+    public static Group hospitalCrossBadge(double size) {
+        Rectangle bg = new Rectangle(0, 0, size, size);
+        bg.setArcWidth(size * 0.32);
+        bg.setArcHeight(size * 0.32);
+        bg.setFill(Color.web("#0f9d8c"));
+
+        double barW = size * 0.22;
+        double barL = size * 0.60;
+        double offsetL = (size - barL) / 2.0;
+        double offsetW = (size - barW) / 2.0;
+
+        Rectangle hBar = new Rectangle(offsetL, offsetW, barL, barW);
+        hBar.setArcWidth(size * 0.08);
+        hBar.setArcHeight(size * 0.08);
+        hBar.setFill(Color.WHITE);
+
+        Rectangle vBar = new Rectangle(offsetW, offsetL, barW, barL);
+        vBar.setArcWidth(size * 0.08);
+        vBar.setArcHeight(size * 0.08);
+        vBar.setFill(Color.WHITE);
+
+        return new Group(bg, hBar, vBar);
+    }
+
+    // ---- Legacy Logo (Maintained for Backward Compatibility) ----------
+
     public static Group gearCrossLogo(double size, boolean sidebarPalette) {
         String bodyClass = sidebarPalette ? "logo-gear-teeth-sidebar" : "logo-gear-teeth";
         String boreClass = sidebarPalette ? "logo-gear-bore-sidebar" : "logo-gear-bore";
@@ -48,11 +109,6 @@ public final class IconFactory {
         double toothWidth = 15;
         double toothHeight = 17;
         for (int i = 0; i < teethCount; i++) {
-            // Each tooth is drawn pointing "up" from the hub, centered on
-            // the vertical axis through (50,50), then rotated into place
-            // around that same center point via an explicit pivot - using
-            // Node.setRotate() alone would pivot around the tooth's own
-            // (very different) local bounds center and scatter the teeth.
             Rectangle tooth = new Rectangle(50 - toothWidth / 2, 50 - 34 - toothHeight + 4, toothWidth, toothHeight);
             tooth.setArcWidth(3);
             tooth.setArcHeight(3);
@@ -64,13 +120,11 @@ public final class IconFactory {
         Circle bore = new Circle(50, 50, 15);
         bore.getStyleClass().add(boreClass);
 
-        // Large teal cross, centered on the gear, arms extending past its
-        // outer edge - the dominant element of the mark, matching the
-        // reference logo rather than a small corner badge.
         Rectangle crossOutlineH = new Rectangle(22, 41, 66, 18);
         crossOutlineH.setArcWidth(6);
         crossOutlineH.setArcHeight(6);
         crossOutlineH.getStyleClass().add("logo-cross-outline");
+
         Rectangle crossOutlineV = new Rectangle(41, 22, 18, 66);
         crossOutlineV.setArcWidth(6);
         crossOutlineV.setArcHeight(6);
@@ -80,6 +134,7 @@ public final class IconFactory {
         crossH.setArcWidth(5);
         crossH.setArcHeight(5);
         crossH.getStyleClass().add("logo-cross");
+
         Rectangle crossV = new Rectangle(43, 24, 14, 62);
         crossV.setArcWidth(5);
         crossV.setArcHeight(5);
@@ -94,9 +149,8 @@ public final class IconFactory {
         return group;
     }
 
-    // ---- Sidebar navigation icons ------------------------------------
+    // ---- Sidebar Navigation Icons ------------------------------------
 
-    /** Dashboard: 2x2 grid of small squares. */
     public static Group grid(double size, String styleClass) {
         double cell = size * 0.42;
         double gap = size * 0.16;
@@ -112,7 +166,6 @@ public final class IconFactory {
         return g;
     }
 
-    /** Generic person silhouette: circle head + rounded shoulders, clipped to a square viewport. */
     public static Group person(double size, String styleClass) {
         Circle head = new Circle(size * 0.5, size * 0.32, size * 0.16);
         head.getStyleClass().add(styleClass);
@@ -123,24 +176,18 @@ public final class IconFactory {
         return g;
     }
 
-    /**
-     * Outline (stroke-only) version of the person silhouette - used for
-     * large low-opacity watermark icons, where a filled shape reads as a
-     * heavy "blob" but a thin outline reads as clean, deliberate line art.
-     */
     public static Group personOutline(double size, String styleClass) {
         Circle head = new Circle(size * 0.5, size * 0.32, size * 0.16);
         head.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        head.getStyleClass().add(styleClass + "-stroke");
+        head.getStyleClass().addAll(styleClass, "icon-stroke");
         Circle shoulders = new Circle(size * 0.5, size * 0.98, size * 0.3);
         shoulders.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        shoulders.getStyleClass().add(styleClass + "-stroke");
+        shoulders.getStyleClass().addAll(styleClass, "icon-stroke");
         Group g = new Group(head, shoulders);
         g.setClip(new Rectangle(0, 0, size, size * 0.98));
         return g;
     }
 
-    /** Doctor: a person silhouette plus a small medical-cross badge, distinguishing it from a plain person icon. */
     public static Group doctorPerson(double size, String styleClass, String badgeStyleClass) {
         Group base = person(size, styleClass);
         Circle badgeCircle = new Circle(size * 0.82, size * 0.78, size * 0.2);
@@ -152,25 +199,23 @@ public final class IconFactory {
         return new Group(base, badgeCircle, h, v);
     }
 
-    /** Outline version of doctorPerson, for watermark use (see personOutline). */
     public static Group doctorPersonOutline(double size, String styleClass) {
         Group base = personOutline(size, styleClass);
         Circle badgeCircle = new Circle(size * 0.82, size * 0.78, size * 0.16);
         badgeCircle.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        badgeCircle.getStyleClass().add(styleClass + "-stroke");
+        badgeCircle.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(base, badgeCircle);
     }
 
-    /** Appointments: a calendar with a header band and a highlighted date. */
     public static Group calendar(double size, String styleClass) {
         Rectangle body = new Rectangle(size * 0.08, size * 0.16, size * 0.84, size * 0.76);
         body.setArcWidth(size * 0.1);
         body.setArcHeight(size * 0.1);
         body.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        body.getStyleClass().add(styleClass + "-stroke");
+        body.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Line header = new Line(size * 0.08, size * 0.38, size * 0.92, size * 0.38);
-        header.getStyleClass().add(styleClass + "-stroke");
+        header.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Rectangle tabLeft = new Rectangle(size * 0.24, size * 0.06, size * 0.08, size * 0.2);
         tabLeft.setArcWidth(size * 0.04);
@@ -190,7 +235,6 @@ public final class IconFactory {
         return new Group(body, header, tabLeft, tabRight, dateMark);
     }
 
-    /** Rooms/Wards: a simple bed - a headboard plus a mattress and legs. */
     public static Group bed(double size, String styleClass) {
         Rectangle mattress = new Rectangle(size * 0.06, size * 0.5, size * 0.88, size * 0.3);
         mattress.setArcWidth(size * 0.08);
@@ -203,20 +247,19 @@ public final class IconFactory {
         headboard.getStyleClass().add(styleClass);
 
         Line leg1 = new Line(size * 0.12, size * 0.8, size * 0.12, size * 0.94);
-        leg1.getStyleClass().add(styleClass + "-stroke");
+        leg1.getStyleClass().addAll(styleClass, "icon-stroke");
         Line leg2 = new Line(size * 0.86, size * 0.8, size * 0.86, size * 0.94);
-        leg2.getStyleClass().add(styleClass + "-stroke");
+        leg2.getStyleClass().addAll(styleClass, "icon-stroke");
 
         return new Group(mattress, headboard, leg1, leg2);
     }
 
-    /** Medical Records: a clipboard with a clip and ruled lines. */
     public static Group clipboard(double size, String styleClass) {
         Rectangle board = new Rectangle(size * 0.14, size * 0.14, size * 0.72, size * 0.8);
         board.setArcWidth(size * 0.08);
         board.setArcHeight(size * 0.08);
         board.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        board.getStyleClass().add(styleClass + "-stroke");
+        board.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Rectangle clip = new Rectangle(size * 0.36, size * 0.04, size * 0.28, size * 0.16);
         clip.setArcWidth(size * 0.06);
@@ -227,14 +270,13 @@ public final class IconFactory {
         for (int i = 0; i < 3; i++) {
             double y = size * (0.38 + i * 0.16);
             Line line = new Line(size * 0.26, y, size * 0.74, y);
-            line.getStyleClass().add(styleClass + "-stroke");
+            line.getStyleClass().addAll(styleClass, "icon-stroke");
             lines.getChildren().add(line);
         }
 
         return new Group(board, clip, lines);
     }
 
-    /** Reports: a simple ascending bar chart. */
     public static Group barChart(double size, String styleClass) {
         Rectangle bar1 = new Rectangle(size * 0.12, size * 0.55, size * 0.2, size * 0.35);
         Rectangle bar2 = new Rectangle(size * 0.4, size * 0.35, size * 0.2, size * 0.55);
@@ -247,7 +289,6 @@ public final class IconFactory {
         return new Group(bar1, bar2, bar3);
     }
 
-    /** Audit Log: a shield outline with a checkmark. */
     public static Group shield(double size, String styleClass) {
         Polygon shield = new Polygon(
                 size * 0.5, size * 0.04,
@@ -258,37 +299,35 @@ public final class IconFactory {
                 size * 0.12, size * 0.18
         );
         shield.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        shield.getStyleClass().add(styleClass + "-stroke");
+        shield.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Line checkA = new Line(size * 0.34, size * 0.5, size * 0.46, size * 0.62);
         Line checkB = new Line(size * 0.46, size * 0.62, size * 0.68, size * 0.36);
-        checkA.getStyleClass().add(styleClass + "-stroke");
-        checkB.getStyleClass().add(styleClass + "-stroke");
+        checkA.getStyleClass().addAll(styleClass, "icon-stroke");
+        checkB.getStyleClass().addAll(styleClass, "icon-stroke");
 
         return new Group(shield, checkA, checkB);
     }
 
-    /** Billing: two overlapping coins. */
     public static Group cash(double size, String styleClass) {
         Circle coin1 = new Circle(size * 0.36, size * 0.64, size * 0.3);
         Circle coin2 = new Circle(size * 0.64, size * 0.4, size * 0.3);
         coin1.setFill(javafx.scene.paint.Color.TRANSPARENT);
         coin2.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        coin1.getStyleClass().add(styleClass + "-stroke");
-        coin2.getStyleClass().add(styleClass + "-stroke");
+        coin1.getStyleClass().addAll(styleClass, "icon-stroke");
+        coin2.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(coin1, coin2);
     }
 
-    /** Logout: an open door with an arrow pointing out of it. */
     public static Group logout(double size, String styleClass) {
         Rectangle door = new Rectangle(size * 0.1, size * 0.1, size * 0.32, size * 0.8);
         door.setArcWidth(size * 0.06);
         door.setArcHeight(size * 0.06);
         door.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        door.getStyleClass().add(styleClass + "-stroke");
+        door.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Line shaft = new Line(size * 0.42, size * 0.5, size * 0.86, size * 0.5);
-        shaft.getStyleClass().add(styleClass + "-stroke");
+        shaft.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Polygon arrowHead = new Polygon(
                 size * 0.68, size * 0.34,
@@ -296,23 +335,22 @@ public final class IconFactory {
                 size * 0.68, size * 0.66
         );
         arrowHead.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        arrowHead.getStyleClass().add(styleClass + "-stroke");
+        arrowHead.getStyleClass().addAll(styleClass, "icon-stroke");
 
         return new Group(door, shaft, arrowHead);
     }
 
-    // ---- Top bar icons ------------------------------------------------
+    // ---- Top Bar & UI Icons -------------------------------------------
 
     public static Group search(double size, String styleClass) {
         Circle lens = new Circle(size * 0.4, size * 0.4, size * 0.3);
         lens.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        lens.getStyleClass().add(styleClass + "-stroke");
+        lens.getStyleClass().addAll(styleClass, "icon-stroke");
         Line handle = new Line(size * 0.62, size * 0.62, size * 0.9, size * 0.9);
-        handle.getStyleClass().add(styleClass + "-stroke");
+        handle.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(lens, handle);
     }
 
-    /** Notification bell. */
     public static Group bell(double size, String styleClass) {
         Polygon body = new Polygon(
                 size * 0.5, size * 0.06,
@@ -341,13 +379,12 @@ public final class IconFactory {
             double x2 = size * 0.5 + Math.cos(angle) * size * 0.46;
             double y2 = size * 0.5 + Math.sin(angle) * size * 0.46;
             Line ray = new Line(x1, y1, x2, y2);
-            ray.getStyleClass().add(styleClass + "-stroke");
+            ray.getStyleClass().addAll(styleClass, "icon-stroke");
             g.getChildren().add(ray);
         }
         return g;
     }
 
-    /** Moon: a circle with a smaller offset circle painted to match the surrounding surface, creating a crescent. */
     public static Group moon(double size, String styleClass) {
         Circle full = new Circle(size * 0.5, size * 0.5, size * 0.34);
         full.getStyleClass().add(styleClass);
@@ -356,7 +393,6 @@ public final class IconFactory {
         return new Group(full, bite);
     }
 
-    /** Open eye - password visible. */
     public static Group eye(double size, String styleClass) {
         double w = size * 1.3;
         Polygon outline = new Polygon(
@@ -366,18 +402,17 @@ public final class IconFactory {
                 w * 0.5, size
         );
         outline.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        outline.getStyleClass().add(styleClass + "-stroke");
+        outline.getStyleClass().addAll(styleClass, "icon-stroke");
         Circle pupil = new Circle(w * 0.5, size * 0.5, size * 0.22);
         pupil.getStyleClass().add(styleClass);
         return new Group(outline, pupil);
     }
 
-    /** Closed eye (with a diagonal slash) - password hidden. */
     public static Group eyeSlash(double size, String styleClass) {
         Group base = eye(size, styleClass);
         double w = size * 1.3;
         Line slash = new Line(0, size, w, 0);
-        slash.getStyleClass().add(styleClass + "-stroke");
+        slash.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(base, slash);
     }
 
@@ -388,7 +423,7 @@ public final class IconFactory {
                 size * 0.65, size * 0.9
         );
         p.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        p.getStyleClass().add(styleClass + "-stroke");
+        p.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(p);
     }
 
@@ -399,7 +434,7 @@ public final class IconFactory {
                 size * 0.35, size * 0.9
         );
         p.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        p.getStyleClass().add(styleClass + "-stroke");
+        p.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(p);
     }
 }

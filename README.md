@@ -59,3 +59,5 @@ A desktop Hospital Management System built with **Java 21** and **JavaFX 21**, f
 1. **Clone the repository:**
    ```bash
    git clone [https://github.com/khemaseng/Hospital-Managements.git](https://github.com/khemaseng/Hospital-Managements.git)
+
+

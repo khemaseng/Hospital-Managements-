@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-
 /**
  * Small helpers so every controller shows errors/confirmations the same way
  * (JavaFX Alert dialogs) instead of letting exceptions bubble up and crash
@@ -21,7 +20,6 @@ public final class DialogUtil {
 
     private DialogUtil() {
     }
-
     public static void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -29,7 +27,6 @@ public final class DialogUtil {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
     public static void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -37,7 +34,6 @@ public final class DialogUtil {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
     public static boolean confirm(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
