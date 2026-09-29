@@ -1,3 +1,4 @@
+
 package com.hms.repository;
 
 import com.hms.database.DatabaseConnection;
@@ -12,9 +13,6 @@ import java.util.Optional;
 
 public class PatientRepository {
 
-    // Aliased join to rooms so callers can see which room (if any) a patient
-    // currently occupies without a separate query. "p." prefix on every
-    // patients column avoids an id collision with rooms.id.
     private static final String SELECT_WITH_ROOM =
             "SELECT p.*, r.room_code AS assigned_room_code FROM patients p LEFT JOIN rooms r ON r.id = p.room_id ";
 
@@ -32,7 +30,6 @@ public class PatientRepository {
         return result;
     }
 
-    /** Most recently registered patients, newest first - feeds the dashboard's Recent Registrations panel. */
     public List<Patient> findRecent(int limit) {
         String sql = SELECT_WITH_ROOM + "ORDER BY p.id DESC LIMIT ?";
         List<Patient> result = new ArrayList<>();
@@ -49,11 +46,6 @@ public class PatientRepository {
         return result;
     }
 
-    /**
-     * Search across name, patient code, and phone; simultaneously filter by
-     * gender and blood group when those filters are non-null. Paginated:
-     * pageIndex is 0-based, pageSize is rows per page.
-     */
     public List<Patient> search(String keyword, String genderFilter, String bloodGroupFilter, int pageIndex, int pageSize) {
         StringBuilder sql = new StringBuilder(SELECT_WITH_ROOM + "WHERE 1=1");
         List<Object> params = buildFilterParams(sql, keyword, genderFilter, bloodGroupFilter);
@@ -77,7 +69,6 @@ public class PatientRepository {
         return result;
     }
 
-    /** Total row count matching the same filters as search(), for computing page count. */
     public int countSearch(String keyword, String genderFilter, String bloodGroupFilter) {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) AS cnt FROM patients p WHERE 1=1");
         List<Object> params = buildFilterParams(sql, keyword, genderFilter, bloodGroupFilter);
@@ -137,12 +128,34 @@ public class PatientRepository {
         }
     }
 
+    /**
+     * Finds the highest numeric code in patients and increments it,
+     * preventing UNIQUE constraint errors if rows were previously deleted.
+     */
     public String nextPatientCode() {
-        String sql = "SELECT COUNT(*) AS cnt FROM patients";
+        String sql = "SELECT patient_code FROM patients WHERE patient_code LIKE 'PAT-%' ORDER BY patient_code DESC";
+        int maxNum = 0;
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            int count = rs.next() ? rs.getInt("cnt") : 0;
-            return String.format("PAT-%04d", count + 1);
+            while (rs.next()) {
+                String code = rs.getString("patient_code");
+                if (code != null && code.length() > 4) {
+                    try {
+                        int num = Integer.parseInt(code.substring(4));
+                        if (num > maxNum) {
+                            maxNum = num;
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+
+            // Loop until an unused code is guaranteed
+            int candidate = maxNum + 1;
+            while (existsByCode(String.format("PAT-%04d", candidate))) {
+                candidate++;
+            }
+            return String.format("PAT-%04d", candidate);
         } catch (SQLException e) {
             throw new DataAccessException("Failed to generate patient code.", e);
         }
@@ -150,7 +163,7 @@ public class PatientRepository {
 
     public Patient save(Patient p) {
         String sql = "INSERT INTO patients (patient_code, full_name, gender, age, date_of_birth, phone, " +
-                     "email, address, blood_group, emergency_contact) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "email, address, blood_group, emergency_contact) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
             bind(ps, p);
             ps.executeUpdate();
@@ -163,7 +176,7 @@ public class PatientRepository {
 
     public void update(Patient p) {
         String sql = "UPDATE patients SET full_name=?, gender=?, age=?, date_of_birth=?, phone=?, email=?, " +
-                     "address=?, blood_group=?, emergency_contact=? WHERE id=?";
+                "address=?, blood_group=?, emergency_contact=? WHERE id=?";
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
             ps.setString(1, p.getFullName());
             ps.setString(2, p.getGender());
@@ -212,9 +225,9 @@ public class PatientRepository {
         ps.setString(5, p.getDateOfBirth() != null ? p.getDateOfBirth().toString() : null);
         ps.setString(6, p.getPhone());
         ps.setString(7, p.getEmail());
-        ps.setString(8, p.getAddress());
+        ps.setString(8, p.getAddress() != null ? p.getAddress() : "");
         ps.setString(9, p.getBloodGroup());
-        ps.setString(10, p.getEmergencyContact());
+        ps.setString(10, p.getEmergencyContact() != null ? p.getEmergencyContact() : "");
     }
 
     private Patient map(ResultSet rs) throws SQLException {
