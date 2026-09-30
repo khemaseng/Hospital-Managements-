@@ -166,10 +166,12 @@
     -fx-background-color: #fef2f2;
     -fx-text-fill: #dc2626;
     -fx-border-color: #fecaca;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 8 16 8 16;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 3 8 3 8;
     -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-text-overrun: clip;
 }
 .btn-danger:hover {
     -fx-background-color: #fee2e2;
@@ -194,7 +196,7 @@
     -fx-padding: 6 14 6 14;
 }
 
-/* ===== Table ===== */
+/* ===== Table Styling & Anti-Truncation Rules ===== */
 .table-view {
     -fx-background-color: -fx-surface;
     -fx-background-radius: 12;
@@ -202,22 +204,55 @@
     -fx-border-radius: 12;
     -fx-padding: 0;
 }
+
+/* Header styling */
 .table-view .column-header-background {
     -fx-background-color: #f8fafc;
     -fx-background-radius: 12 12 0 0;
     -fx-border-color: transparent transparent -fx-border-soft transparent;
     -fx-border-width: 0 0 1 0;
 }
+
 .table-view .column-header {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-size: 38px;
 }
+
 .table-view .column-header-background .label {
     -fx-text-fill: -fx-text-muted;
     -fx-font-weight: 700;
     -fx-font-size: 11px;
+    -fx-text-overrun: clip;
 }
+
+/* Removes grey header filler bar */
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header-background > .show-hide-columns-button {
+    -fx-background-color: transparent;
+}
+
+/* Hide horizontal scrollbar across tables */
+.table-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+}
+
+.table-view .scroll-bar:horizontal .thumb,
+.table-view .scroll-bar:horizontal .track,
+.table-view .scroll-bar:horizontal .increment-button,
+.table-view .scroll-bar:horizontal .decrement-button {
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
+
+/* Table rows and cells */
 .table-row-cell {
     -fx-background-color: -fx-surface;
     -fx-border-color: transparent transparent #f1f5f9 transparent;
@@ -230,9 +265,21 @@
     -fx-background-color: #e6f6f3;
 }
 .table-cell {
-    -fx-padding: 8 12 8 12;
+    -fx-padding: 6 8 6 8;
     -fx-alignment: CENTER_LEFT;
     -fx-border-color: transparent;
+    -fx-text-overrun: clip;
+}
+
+/* Action buttons inside Table Cells (Complete, No-Show, Cancel, Delete, etc.) */
+.table-cell .button {
+    -fx-padding: 3 6 3 6;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-text-overrun: clip;
+    -fx-wrap-text: false;
 }
 
 /* Keeps text crisp and clearly readable when row or cell is selected */
@@ -244,21 +291,18 @@
     -fx-text-fill: #1f2937;
 }
 
-/* ===== Badges ===== */
+/* ===== Badges (Prevent dots / text truncation) ===== */
 .badge {
-    -fx-padding: 3 10 3 10;
-    -fx-background-radius: 16;
-    -fx-font-size: 11px;
+    -fx-padding: 2 6 2 6;
+    -fx-background-radius: 12;
+    -fx-font-size: 10px;
     -fx-font-weight: bold;
+    -fx-text-overrun: clip;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
 }
-.badge-patient {
-    -fx-background-color: #e0f2fe;
-    -fx-text-fill: #0369a1;
-}
-.badge-doctor {
-    -fx-background-color: #f3e8ff;
-    -fx-text-fill: #7e22ce;
-}
+.badge-patient   { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1; }
+.badge-doctor    { -fx-background-color: #f3e8ff; -fx-text-fill: #7e22ce; }
 .badge-scheduled { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1; }
 .badge-completed { -fx-background-color: #dcfce7; -fx-text-fill: #15803d; }
 .badge-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #b91c1c; }
