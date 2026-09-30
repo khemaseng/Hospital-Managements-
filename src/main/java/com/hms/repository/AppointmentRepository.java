@@ -1,3 +1,4 @@
+
 package com.hms.repository;
 
 import com.hms.database.DatabaseConnection;
@@ -16,9 +17,9 @@ public class AppointmentRepository {
 
     private static final String SELECT_JOINED =
             "SELECT a.*, p.full_name AS patient_name, d.full_name AS doctor_name " +
-            "FROM appointments a " +
-            "JOIN patients p ON p.id = a.patient_id " +
-            "JOIN doctors d ON d.id = a.doctor_id ";
+                    "FROM appointments a " +
+                    "JOIN patients p ON p.id = a.patient_id " +
+                    "JOIN doctors d ON d.id = a.doctor_id ";
 
     public List<Appointment> findAll() {
         String sql = SELECT_JOINED + "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
@@ -50,7 +51,7 @@ public class AppointmentRepository {
         return result;
     }
 
-    public List<Appointment> search(String keyword, String statusFilter) {
+    public List<Appointment> search(String keyword, String statusFilter, String sortBy) {
         StringBuilder sql = new StringBuilder(SELECT_JOINED + "WHERE 1=1");
         List<Object> params = new ArrayList<>();
 
@@ -65,7 +66,20 @@ public class AppointmentRepository {
             sql.append(" AND a.status = ?");
             params.add(statusFilter);
         }
-        sql.append(" ORDER BY a.appointment_date DESC, a.appointment_time DESC");
+
+        // Dynamic SQL Sorting
+        if ("Date (Oldest)".equals(sortBy)) {
+            sql.append(" ORDER BY a.appointment_date ASC, a.appointment_time ASC");
+        } else if ("Patient (A-Z)".equals(sortBy)) {
+            sql.append(" ORDER BY p.full_name ASC");
+        } else if ("Doctor (A-Z)".equals(sortBy)) {
+            sql.append(" ORDER BY d.full_name ASC");
+        } else if ("Status".equals(sortBy)) {
+            sql.append(" ORDER BY a.status ASC, a.appointment_date DESC");
+        } else {
+            // Default: Date (Newest)
+            sql.append(" ORDER BY a.appointment_date DESC, a.appointment_time DESC");
+        }
 
         List<Appointment> result = new ArrayList<>();
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql.toString())) {
@@ -83,16 +97,15 @@ public class AppointmentRepository {
         return result;
     }
 
-    /**
-     * True if the given doctor already has a SCHEDULED appointment at the
-     * exact date/time requested. Used by AppointmentService to reject
-     * double-bookings before an INSERT is attempted (the UNIQUE constraint
-     * in the schema is the last line of defense).
-     */
+    // Overload for backward compatibility
+    public List<Appointment> search(String keyword, String statusFilter) {
+        return search(keyword, statusFilter, "Date (Newest)");
+    }
+
     public boolean hasConflict(int doctorId, LocalDate date, LocalTime time, Integer excludeAppointmentId) {
         StringBuilder sql = new StringBuilder(
                 "SELECT 1 FROM appointments WHERE doctor_id = ? AND appointment_date = ? " +
-                "AND appointment_time = ? AND status = 'SCHEDULED'");
+                        "AND appointment_time = ? AND status = 'SCHEDULED'");
         if (excludeAppointmentId != null) {
             sql.append(" AND id != ?");
         }
@@ -123,12 +136,43 @@ public class AppointmentRepository {
         }
     }
 
+    public boolean existsByCode(String code) {
+        String sql = "SELECT 1 FROM appointments WHERE appointment_code = ?";
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
+            ps.setString(1, code);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to check appointment code uniqueness.", e);
+        }
+    }
+
+    /**
+     * Prevents UNIQUE constraint failures after row deletion by finding
+     * the highest numeric suffix in appointments and incrementing it.
+     */
     public String nextAppointmentCode() {
-        String sql = "SELECT COUNT(*) AS cnt FROM appointments";
+        String sql = "SELECT appointment_code FROM appointments WHERE appointment_code LIKE 'APT-%'";
+        int maxNum = 0;
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            int count = rs.next() ? rs.getInt("cnt") : 0;
-            return String.format("APT-%05d", count + 1);
+            while (rs.next()) {
+                String code = rs.getString("appointment_code");
+                if (code != null && code.length() > 4) {
+                    try {
+                        int num = Integer.parseInt(code.substring(4));
+                        if (num > maxNum) {
+                            maxNum = num;
+                        }
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+            int candidate = maxNum + 1;
+            while (existsByCode(String.format("APT-%05d", candidate))) {
+                candidate++;
+            }
+            return String.format("APT-%05d", candidate);
         } catch (SQLException e) {
             throw new DataAccessException("Failed to generate appointment code.", e);
         }
@@ -136,7 +180,7 @@ public class AppointmentRepository {
 
     public Appointment save(Appointment a) {
         String sql = "INSERT INTO appointments (appointment_code, patient_id, doctor_id, department, " +
-                     "appointment_date, appointment_time, status, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                "appointment_date, appointment_time, status, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
             ps.setString(1, a.getAppointmentCode());
             ps.setInt(2, a.getPatientId());

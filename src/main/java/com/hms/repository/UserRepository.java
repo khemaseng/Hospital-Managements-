@@ -1,3 +1,4 @@
+
 package com.hms.repository;
 
 import com.hms.database.DatabaseConnection;
@@ -11,11 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data access layer for the users table. Every query uses PreparedStatement
- * with bound parameters — no string concatenation of SQL, ever — to
- * eliminate SQL-injection risk.
- */
 public class UserRepository {
 
     public Optional<User> findByUsername(String username) {
@@ -35,22 +31,77 @@ public class UserRepository {
     }
 
     public List<User> findAll() {
-        String sql = "SELECT * FROM users ORDER BY full_name";
+        return search(null, "All Roles", "All Status", "Full Name (A-Z)");
+    }
+
+    public List<User> search(String keyword, String roleFilter, String statusFilter, String sortBy) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM users WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        // 1. Search text across username, full_name, and email
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (username LIKE ? OR full_name LIKE ? OR email LIKE ?)");
+            String like = "%" + keyword.trim() + "%";
+            params.add(like);
+            params.add(like);
+            params.add(like);
+        }
+
+        // 2. Role filter
+        if (roleFilter != null && !roleFilter.isBlank() && !roleFilter.equalsIgnoreCase("All Roles")) {
+            sql.append(" AND role = ?");
+            params.add(roleFilter.trim());
+        }
+
+        // 3. Status filter
+        if ("Active".equalsIgnoreCase(statusFilter)) {
+            sql.append(" AND active = 1");
+        } else if ("Inactive".equalsIgnoreCase(statusFilter)) {
+            sql.append(" AND active = 0");
+        }
+
+        // 4. Sorting logic
+        if ("Full Name (Z-A)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY full_name DESC");
+        } else if ("Username (A-Z)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY username ASC");
+        } else if ("Role".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY role ASC, full_name ASC");
+        } else {
+            // Default: Full Name (A-Z)
+            sql.append(" ORDER BY full_name ASC");
+        }
+
         List<User> users = new ArrayList<>();
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                users.add(map(rs));
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    users.add(map(rs));
+                }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Failed to load users.", e);
+            throw new DataAccessException("Failed to search users.", e);
         }
         return users;
     }
 
+    public void updateStatus(int userId, boolean active) {
+        String sql = "UPDATE users SET active = ? WHERE id = ?";
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
+            ps.setBoolean(1, active);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to update user status.", e);
+        }
+    }
+
     public User save(User user) {
         String sql = "INSERT INTO users (username, password_hash, role, full_name, email, active) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPasswordHash());

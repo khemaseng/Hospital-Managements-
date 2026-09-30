@@ -3,6 +3,7 @@ com\hms\model\Invoice.class
 com\hms\controller\ForgotPasswordController.class
 com\hms\controller\ReportsController.class
 com\hms\view\BlueprintBackgroundPainter.class
+com\hms\controller\UserManagementController$2.class
 com\hms\controller\UserFormController.class
 com\hms\model\UserRole.class
 com\hms\service\DashboardService$DashboardStats.class
@@ -51,6 +52,7 @@ com\hms\controller\RoomFormController.class
 com\hms\controller\MedicalRecordFormController$1.class
 com\hms\controller\DoctorFormController.class
 com\hms\repository\InvoiceRepository.class
+com\hms\controller\AuditLogController$1.class
 com\hms\model\Appointment.class
 com\hms\model\PaymentStatus.class
 com\hms\repository\AuditLogRepository.class
@@ -85,9 +87,11 @@ com\hms\model\User.class
 com\hms\controller\MedicalRecordController$1.class
 com\hms\controller\AppointmentFormController$3.class
 com\hms\controller\ProfileController.class
+com\hms\controller\UserManagementController$3.class
 com\hms\service\DashboardService.class
 com\hms\controller\RoomController$1.class
 com\hms\controller\DashboardController$1.class
 com\hms\controller\MedicalRecordFormController$2.class
 com\hms\util\SessionManager.class
+com\hms\controller\AuditLogController$2.class
 com\hms\util\IconFactory.class

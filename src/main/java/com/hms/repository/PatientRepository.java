@@ -46,10 +46,24 @@ public class PatientRepository {
         return result;
     }
 
-    public List<Patient> search(String keyword, String genderFilter, String bloodGroupFilter, int pageIndex, int pageSize) {
+    public List<Patient> search(String keyword, String genderFilter, String bloodGroupFilter, String sortBy, int pageIndex, int pageSize) {
         StringBuilder sql = new StringBuilder(SELECT_WITH_ROOM + "WHERE 1=1");
         List<Object> params = buildFilterParams(sql, keyword, genderFilter, bloodGroupFilter);
-        sql.append(" ORDER BY p.full_name LIMIT ? OFFSET ?");
+
+        // Sorting Logic
+        if ("Name (Z-A)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY p.full_name DESC");
+        } else if ("Age (Youngest)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY p.age ASC");
+        } else if ("Age (Oldest)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY p.age DESC");
+        } else if ("Patient ID".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY p.patient_code ASC");
+        } else {
+            sql.append(" ORDER BY p.full_name ASC"); // Default: Name (A-Z)
+        }
+
+        sql.append(" LIMIT ? OFFSET ?");
         params.add(pageSize);
         params.add(pageIndex * pageSize);
 
@@ -67,6 +81,11 @@ public class PatientRepository {
             throw new DataAccessException("Failed to search patients.", e);
         }
         return result;
+    }
+
+    // Method overload for backward compatibility
+    public List<Patient> search(String keyword, String genderFilter, String bloodGroupFilter, int pageIndex, int pageSize) {
+        return search(keyword, genderFilter, bloodGroupFilter, "Name (A-Z)", pageIndex, pageSize);
     }
 
     public int countSearch(String keyword, String genderFilter, String bloodGroupFilter) {
@@ -93,13 +112,13 @@ public class PatientRepository {
             params.add(like);
             params.add(like);
         }
-        if (genderFilter != null && !genderFilter.isBlank() && !genderFilter.equals("All")) {
-            sql.append(" AND p.gender = ?");
-            params.add(genderFilter);
+        if (genderFilter != null && !genderFilter.isBlank() && !genderFilter.equalsIgnoreCase("All")) {
+            sql.append(" AND TRIM(UPPER(p.gender)) = ?");
+            params.add(genderFilter.trim().toUpperCase());
         }
-        if (bloodGroupFilter != null && !bloodGroupFilter.isBlank() && !bloodGroupFilter.equals("All")) {
-            sql.append(" AND p.blood_group = ?");
-            params.add(bloodGroupFilter);
+        if (bloodGroupFilter != null && !bloodGroupFilter.isBlank() && !bloodGroupFilter.equalsIgnoreCase("All")) {
+            sql.append(" AND TRIM(UPPER(p.blood_group)) = ?");
+            params.add(bloodGroupFilter.trim().toUpperCase());
         }
         return params;
     }
@@ -128,10 +147,6 @@ public class PatientRepository {
         }
     }
 
-    /**
-     * Finds the highest numeric code in patients and increments it,
-     * preventing UNIQUE constraint errors if rows were previously deleted.
-     */
     public String nextPatientCode() {
         String sql = "SELECT patient_code FROM patients WHERE patient_code LIKE 'PAT-%' ORDER BY patient_code DESC";
         int maxNum = 0;
@@ -145,12 +160,10 @@ public class PatientRepository {
                         if (num > maxNum) {
                             maxNum = num;
                         }
-                    } catch (NumberFormatException ignored) {
-                    }
+                    } catch (NumberFormatException ignored) {}
                 }
             }
 
-            // Loop until an unused code is guaranteed
             int candidate = maxNum + 1;
             while (existsByCode(String.format("PAT-%04d", candidate))) {
                 candidate++;

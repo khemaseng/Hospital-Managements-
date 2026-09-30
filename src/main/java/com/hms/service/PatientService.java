@@ -1,3 +1,4 @@
+
 package com.hms.service;
 
 import com.hms.model.Patient;
@@ -11,10 +12,6 @@ import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Business rules for patient management sit here, keeping controllers thin
- * (UI glue only) and repositories dumb (SQL only).
- */
 public class PatientService {
 
     private final PatientRepository patientRepository = new PatientRepository();
@@ -27,11 +24,16 @@ public class PatientService {
         return patientRepository.findRecent(limit);
     }
 
-    /** Paginated, filtered search - used by PatientController's table + pagination controls. */
-    public Page<Patient> search(String keyword, String genderFilter, String bloodGroupFilter, int pageIndex, int pageSize) {
-        List<Patient> items = patientRepository.search(keyword, genderFilter, bloodGroupFilter, pageIndex, pageSize);
+    /** Paginated, filtered & sorted search */
+    public Page<Patient> search(String keyword, String genderFilter, String bloodGroupFilter, String sortBy, int pageIndex, int pageSize) {
+        List<Patient> items = patientRepository.search(keyword, genderFilter, bloodGroupFilter, sortBy, pageIndex, pageSize);
         int total = patientRepository.countSearch(keyword, genderFilter, bloodGroupFilter);
         return new Page<>(items, pageIndex, pageSize, total);
+    }
+
+    // Overload សម្រាប់កូដណាដែលហៅរក method ចាស់
+    public Page<Patient> search(String keyword, String genderFilter, String bloodGroupFilter, int pageIndex, int pageSize) {
+        return search(keyword, genderFilter, bloodGroupFilter, "Name (A-Z)", pageIndex, pageSize);
     }
 
     public Optional<Patient> findById(int id) {

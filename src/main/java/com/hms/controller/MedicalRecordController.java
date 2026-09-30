@@ -1,8 +1,12 @@
+
 package com.hms.controller;
 
+import com.hms.model.Doctor;
 import com.hms.model.MedicalRecord;
+import com.hms.service.DoctorService;
 import com.hms.service.MedicalRecordService;
 import com.hms.util.DialogUtil;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,6 +21,8 @@ import java.util.List;
 public class MedicalRecordController {
 
     @FXML private TextField searchField;
+    @FXML private ComboBox<String> doctorFilter;
+    @FXML private ComboBox<String> sortFilter;
     @FXML private Label resultCountLabel;
     @FXML private TableView<MedicalRecord> recordTable;
     @FXML private TableColumn<MedicalRecord, String> colDate;
@@ -27,12 +33,13 @@ public class MedicalRecordController {
     @FXML private TableColumn<MedicalRecord, Void> colActions;
 
     private final MedicalRecordService recordService = new MedicalRecordService();
+    private final DoctorService doctorService = new DoctorService();
     private final ObservableList<MedicalRecord> records = FXCollections.observableArrayList();
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd MMM yyyy");
 
     @FXML
     public void initialize() {
-        colDate.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        colDate.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getRecordDate() != null ? data.getValue().getRecordDate().format(DATE_FORMAT) : ""));
         colPatient.setCellValueFactory(new PropertyValueFactory<>("patientName"));
         colDoctor.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
@@ -40,18 +47,59 @@ public class MedicalRecordController {
         colPrescription.setCellValueFactory(new PropertyValueFactory<>("prescription"));
         addActionButtons();
 
+        // 1. Load active Doctors into Doctor Filter
+        loadDoctorFilters();
+
+        // 2. Setup Sort Dropdown Options
+        sortFilter.getItems().setAll(
+                "Date (Newest)",
+                "Date (Oldest)",
+                "Patient (A-Z)",
+                "Doctor (A-Z)"
+        );
+        sortFilter.setValue("Date (Newest)");
+
+        // 3. Attach Direct Property Listeners (Real-time reactivity)
+        doctorFilter.valueProperty().addListener((obs, oldVal, newVal) -> refresh());
+        sortFilter.valueProperty().addListener((obs, oldVal, newVal) -> refresh());
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> refresh());
+
         recordTable.setItems(records);
         refresh();
     }
 
+    private void loadDoctorFilters() {
+        doctorFilter.getItems().clear();
+        doctorFilter.getItems().add("All Doctors");
+        try {
+            List<Doctor> doctors = doctorService.getAllDoctors();
+            for (Doctor d : doctors) {
+                doctorFilter.getItems().add(d.getFullName());
+            }
+        } catch (Exception ignored) {}
+        doctorFilter.setValue("All Doctors");
+    }
+
     private void refresh() {
-        List<MedicalRecord> results = recordService.search(searchField.getText());
+        String keyword = searchField != null ? searchField.getText() : "";
+        String doctor = doctorFilter != null && doctorFilter.getValue() != null ? doctorFilter.getValue() : "All Doctors";
+        String sortBy = sortFilter != null && sortFilter.getValue() != null ? sortFilter.getValue() : "Date (Newest)";
+
+        List<MedicalRecord> results = recordService.search(keyword, doctor, sortBy);
         records.setAll(results);
-        resultCountLabel.setText(results.size() + " record(s)");
+
+        if (resultCountLabel != null) {
+            resultCountLabel.setText(results.size() + " record(s)");
+        }
     }
 
     @FXML
     private void handleFilterChanged(KeyEvent event) {
+        refresh();
+    }
+
+    @FXML
+    private void handleFilterChanged() {
         refresh();
     }
 
@@ -92,12 +140,14 @@ public class MedicalRecordController {
             private final HBox box = new HBox(6, editBtn, deleteBtn);
 
             {
+                box.setAlignment(javafx.geometry.Pos.CENTER); // ឱ្យប្រអប់ប៊ូតុងនៅចំកណ្តាល
                 editBtn.getStyleClass().add("btn-secondary");
                 deleteBtn.getStyleClass().add("btn-danger");
+                editBtn.setStyle("-fx-font-size: 11px; -fx-padding: 4 10 4 10;");
+                deleteBtn.setStyle("-fx-font-size: 11px; -fx-padding: 4 10 4 10;");
                 editBtn.setOnAction(e -> handleEdit(getTableView().getItems().get(getIndex())));
                 deleteBtn.setOnAction(e -> handleDelete(getTableView().getItems().get(getIndex())));
             }
-
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);

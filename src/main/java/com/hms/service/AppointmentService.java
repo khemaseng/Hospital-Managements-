@@ -11,12 +11,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Owns the double-booking rule: a doctor cannot have two SCHEDULED
- * appointments at the same date+time. The check happens here (business
- * rule) and is backstopped by a UNIQUE constraint in the schema
- * (data-integrity rule) in case of concurrent writers.
- */
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository = new AppointmentRepository();
@@ -29,8 +23,13 @@ public class AppointmentService {
         return appointmentRepository.findByDate(date);
     }
 
+    public List<Appointment> search(String keyword, String statusFilter, String sortBy) {
+        return appointmentRepository.search(keyword, statusFilter, sortBy);
+    }
+
+    // Overload for backward compatibility
     public List<Appointment> search(String keyword, String statusFilter) {
-        return appointmentRepository.search(keyword, statusFilter);
+        return appointmentRepository.search(keyword, statusFilter, "Date (Newest)");
     }
 
     public Optional<Appointment> findById(int id) {

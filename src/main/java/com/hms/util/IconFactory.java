@@ -1,7 +1,10 @@
 
 package com.hms.util;
 
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -20,15 +23,7 @@ public final class IconFactory {
 
     // ---- Modern Hospital & Clinical Logos ----------------------------
 
-    /**
-     * Modern clinical shield & cross logo.
-     * Ideal for replacing outdated text headers in the sidebar and login cards.
-     *
-     * @param size Base width and height of the rendered logo
-     * @param sidebarPalette true if rendering on dark green/teal sidebar; false for light surfaces
-     */
     public static Group medicalShieldLogo(double size, boolean sidebarPalette) {
-        // Base shield path (normalized to 100x100)
         SVGPath shield = new SVGPath();
         shield.setContent("M 50,6 " +
                 "C 74,6 90,14 90,26 " +
@@ -52,7 +47,6 @@ public final class IconFactory {
         }
         shield.setFill(gradient);
 
-        // Inner medical cross (+)
         SVGPath cross = new SVGPath();
         cross.setContent("M 43,28 " +
                 "L 57,28 A 3,3 0 0 1 60,31 L 60,43 L 72,43 A 3,3 0 0 1 75,46 L 75,54 A 3,3 0 0 1 72,57 L 60,57 L 60,69 A 3,3 0 0 1 57,72 L 43,72 A 3,3 0 0 1 40,69 L 40,57 L 28,57 A 3,3 0 0 1 25,54 L 25,46 A 3,3 0 0 1 28,43 L 40,43 L 40,31 A 3,3 0 0 1 43,28 Z");
@@ -67,9 +61,6 @@ public final class IconFactory {
         return group;
     }
 
-    /**
-     * Standalone modern hospital cross badge.
-     */
     public static Group hospitalCrossBadge(double size) {
         Rectangle bg = new Rectangle(0, 0, size, size);
         bg.setArcWidth(size * 0.32);
@@ -93,8 +84,6 @@ public final class IconFactory {
 
         return new Group(bg, hBar, vBar);
     }
-
-    // ---- Legacy Logo (Maintained for Backward Compatibility) ----------
 
     public static Group gearCrossLogo(double size, boolean sidebarPalette) {
         String bodyClass = sidebarPalette ? "logo-gear-teeth-sidebar" : "logo-gear-teeth";
@@ -178,10 +167,10 @@ public final class IconFactory {
 
     public static Group personOutline(double size, String styleClass) {
         Circle head = new Circle(size * 0.5, size * 0.32, size * 0.16);
-        head.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        head.setFill(Color.TRANSPARENT);
         head.getStyleClass().addAll(styleClass, "icon-stroke");
         Circle shoulders = new Circle(size * 0.5, size * 0.98, size * 0.3);
-        shoulders.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        shoulders.setFill(Color.TRANSPARENT);
         shoulders.getStyleClass().addAll(styleClass, "icon-stroke");
         Group g = new Group(head, shoulders);
         g.setClip(new Rectangle(0, 0, size, size * 0.98));
@@ -202,7 +191,7 @@ public final class IconFactory {
     public static Group doctorPersonOutline(double size, String styleClass) {
         Group base = personOutline(size, styleClass);
         Circle badgeCircle = new Circle(size * 0.82, size * 0.78, size * 0.16);
-        badgeCircle.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        badgeCircle.setFill(Color.TRANSPARENT);
         badgeCircle.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(base, badgeCircle);
     }
@@ -211,7 +200,7 @@ public final class IconFactory {
         Rectangle body = new Rectangle(size * 0.08, size * 0.16, size * 0.84, size * 0.76);
         body.setArcWidth(size * 0.1);
         body.setArcHeight(size * 0.1);
-        body.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        body.setFill(Color.TRANSPARENT);
         body.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Line header = new Line(size * 0.08, size * 0.38, size * 0.92, size * 0.38);
@@ -258,7 +247,7 @@ public final class IconFactory {
         Rectangle board = new Rectangle(size * 0.14, size * 0.14, size * 0.72, size * 0.8);
         board.setArcWidth(size * 0.08);
         board.setArcHeight(size * 0.08);
-        board.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        board.setFill(Color.TRANSPARENT);
         board.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Rectangle clip = new Rectangle(size * 0.36, size * 0.04, size * 0.28, size * 0.16);
@@ -298,7 +287,7 @@ public final class IconFactory {
                 size * 0.12, size * 0.5,
                 size * 0.12, size * 0.18
         );
-        shield.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        shield.setFill(Color.TRANSPARENT);
         shield.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Line checkA = new Line(size * 0.34, size * 0.5, size * 0.46, size * 0.62);
@@ -312,8 +301,8 @@ public final class IconFactory {
     public static Group cash(double size, String styleClass) {
         Circle coin1 = new Circle(size * 0.36, size * 0.64, size * 0.3);
         Circle coin2 = new Circle(size * 0.64, size * 0.4, size * 0.3);
-        coin1.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        coin2.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        coin1.setFill(Color.TRANSPARENT);
+        coin2.setFill(Color.TRANSPARENT);
         coin1.getStyleClass().addAll(styleClass, "icon-stroke");
         coin2.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(coin1, coin2);
@@ -323,7 +312,7 @@ public final class IconFactory {
         Rectangle door = new Rectangle(size * 0.1, size * 0.1, size * 0.32, size * 0.8);
         door.setArcWidth(size * 0.06);
         door.setArcHeight(size * 0.06);
-        door.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        door.setFill(Color.TRANSPARENT);
         door.getStyleClass().addAll(styleClass, "icon-stroke");
 
         Line shaft = new Line(size * 0.42, size * 0.5, size * 0.86, size * 0.5);
@@ -334,7 +323,7 @@ public final class IconFactory {
                 size * 0.9, size * 0.5,
                 size * 0.68, size * 0.66
         );
-        arrowHead.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        arrowHead.setFill(Color.TRANSPARENT);
         arrowHead.getStyleClass().addAll(styleClass, "icon-stroke");
 
         return new Group(door, shaft, arrowHead);
@@ -344,7 +333,7 @@ public final class IconFactory {
 
     public static Group search(double size, String styleClass) {
         Circle lens = new Circle(size * 0.4, size * 0.4, size * 0.3);
-        lens.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        lens.setFill(Color.TRANSPARENT);
         lens.getStyleClass().addAll(styleClass, "icon-stroke");
         Line handle = new Line(size * 0.62, size * 0.62, size * 0.9, size * 0.9);
         handle.getStyleClass().addAll(styleClass, "icon-stroke");
@@ -367,53 +356,82 @@ public final class IconFactory {
         return new Group(body, band, clapper);
     }
 
-    public static Group sun(double size, String styleClass) {
-        Group g = new Group();
-        Circle core = new Circle(size * 0.5, size * 0.5, size * 0.22);
-        core.getStyleClass().add(styleClass);
-        g.getChildren().add(core);
-        for (int i = 0; i < 8; i++) {
-            double angle = Math.toRadians(i * 45);
-            double x1 = size * 0.5 + Math.cos(angle) * size * 0.32;
-            double y1 = size * 0.5 + Math.sin(angle) * size * 0.32;
-            double x2 = size * 0.5 + Math.cos(angle) * size * 0.46;
-            double y2 = size * 0.5 + Math.sin(angle) * size * 0.46;
-            Line ray = new Line(x1, y1, x2, y2);
-            ray.getStyleClass().addAll(styleClass, "icon-stroke");
-            g.getChildren().add(ray);
-        }
-        return g;
+    public static Node sun(double size, String styleClass) {
+        SVGPath path = new SVGPath();
+        path.setContent("M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z");
+        path.getStyleClass().add(styleClass);
+        path.setStyle("-fx-stroke: #475569; -fx-stroke-width: 2; -fx-stroke-linecap: round; -fx-fill: transparent;");
+
+        double scale = size / 24.0;
+        path.setScaleX(scale);
+        path.setScaleY(scale);
+
+        StackPane box = new StackPane(path);
+        box.setMinSize(size, size);
+        box.setPrefSize(size, size);
+        box.setMaxSize(size, size);
+        box.setAlignment(Pos.CENTER);
+        return box;
     }
 
-    public static Group moon(double size, String styleClass) {
-        Circle full = new Circle(size * 0.5, size * 0.5, size * 0.34);
-        full.getStyleClass().add(styleClass);
-        Circle bite = new Circle(size * 0.66, size * 0.38, size * 0.28);
-        bite.getStyleClass().add("moon-bite");
-        return new Group(full, bite);
+    public static Node moon(double size, String styleClass) {
+        SVGPath path = new SVGPath();
+        path.setContent("M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z");
+        path.getStyleClass().add(styleClass);
+        path.setStyle("-fx-fill: #475569; -fx-stroke: transparent;");
+
+        double scale = size / 24.0;
+        path.setScaleX(scale);
+        path.setScaleY(scale);
+
+        StackPane box = new StackPane(path);
+        box.setMinSize(size, size);
+        box.setPrefSize(size, size);
+        box.setMaxSize(size, size);
+        box.setAlignment(Pos.CENTER);
+        return box;
     }
 
-    public static Group eye(double size, String styleClass) {
-        double w = size * 1.3;
-        Polygon outline = new Polygon(
-                0, size * 0.5,
-                w * 0.5, 0,
-                w, size * 0.5,
-                w * 0.5, size
-        );
-        outline.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        outline.getStyleClass().addAll(styleClass, "icon-stroke");
-        Circle pupil = new Circle(w * 0.5, size * 0.5, size * 0.22);
-        pupil.getStyleClass().add(styleClass);
-        return new Group(outline, pupil);
+    /**
+     * Modern outline Eye icon (when password visible)
+     */
+    public static Node eye(double size, String styleClass) {
+        SVGPath path = new SVGPath();
+        path.setContent("M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z");
+        path.getStyleClass().addAll(styleClass, "icon-stroke");
+        path.setStyle("-fx-fill: transparent; -fx-stroke: #64748b; -fx-stroke-width: 1.8; -fx-stroke-linecap: round; -fx-stroke-linejoin: round;");
+
+        double scale = size / 24.0;
+        path.setScaleX(scale);
+        path.setScaleY(scale);
+
+        StackPane box = new StackPane(path);
+        box.setMinSize(size, size);
+        box.setPrefSize(size, size);
+        box.setMaxSize(size, size);
+        box.setAlignment(Pos.CENTER);
+        return box;
     }
 
-    public static Group eyeSlash(double size, String styleClass) {
-        Group base = eye(size, styleClass);
-        double w = size * 1.3;
-        Line slash = new Line(0, size, w, 0);
-        slash.getStyleClass().addAll(styleClass, "icon-stroke");
-        return new Group(base, slash);
+    /**
+     * Modern Eye-Off / Eye-Slash icon (matching your exact image reference[cite: 13])
+     */
+    public static Node eyeSlash(double size, String styleClass) {
+        SVGPath eyePath = new SVGPath();
+        eyePath.setContent("M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24 M1 1l22 22");
+        eyePath.getStyleClass().addAll(styleClass, "icon-stroke");
+        eyePath.setStyle("-fx-fill: transparent; -fx-stroke: #64748b; -fx-stroke-width: 1.8; -fx-stroke-linecap: round; -fx-stroke-linejoin: round;");
+
+        double scale = size / 24.0;
+        eyePath.setScaleX(scale);
+        eyePath.setScaleY(scale);
+
+        StackPane box = new StackPane(eyePath);
+        box.setMinSize(size, size);
+        box.setPrefSize(size, size);
+        box.setMaxSize(size, size);
+        box.setAlignment(Pos.CENTER);
+        return box;
     }
 
     public static Group chevronLeft(double size, String styleClass) {
@@ -422,7 +440,7 @@ public final class IconFactory {
                 size * 0.3, size * 0.5,
                 size * 0.65, size * 0.9
         );
-        p.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        p.setFill(Color.TRANSPARENT);
         p.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(p);
     }
@@ -433,7 +451,7 @@ public final class IconFactory {
                 size * 0.7, size * 0.5,
                 size * 0.35, size * 0.9
         );
-        p.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        p.setFill(Color.TRANSPARENT);
         p.getStyleClass().addAll(styleClass, "icon-stroke");
         return new Group(p);
     }

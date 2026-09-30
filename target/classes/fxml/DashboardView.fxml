@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -16,20 +16,22 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.hms.controller.DashboardController" spacing="20">
+      fx:controller="com.hms.controller.DashboardController" spacing="18">
 
+    <!-- Top Author & Tracking Section -->
     <HBox alignment="CENTER_LEFT" spacing="14">
-        <Label fx:id="greetingLabel" text="Welcome back" styleClass="section-title"/>
+        <VBox spacing="2">
+            <Label fx:id="greetingLabel" text="Built by Seng SilKhema" styleClass="built-by-heading"/>
+            <Label text="Real-time clinical metrics, admissions, and scheduling" styleClass="muted" style="-fx-font-size: 11px;"/>
+        </VBox>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="+ Add Patient" styleClass="btn-secondary" onAction="#handleQuickAddPatient"/>
         <Button text="+ Add Doctor" styleClass="btn-secondary" onAction="#handleQuickAddDoctor"/>
         <Button text="+ Book Appointment" styleClass="btn-primary" onAction="#handleQuickBookAppointment"/>
     </HBox>
 
-    <!-- ============ STAT CARDS ============
-         Icon graphics (badge + watermark) are injected in
-         DashboardController.initialize() via IconFactory. -->
-    <GridPane hgap="16" vgap="16">
+    <!-- Stat Cards (Row of 5 Clean Modern Metrics) -->
+    <GridPane hgap="14" vgap="14">
         <columnConstraints>
             <ColumnConstraints percentWidth="20"/>
             <ColumnConstraints percentWidth="20"/>
@@ -38,69 +40,70 @@
             <ColumnConstraints percentWidth="20"/>
         </columnConstraints>
 
-        <StackPane styleClass="stat-card" GridPane.columnIndex="0">
-            <StackPane fx:id="watermarkPatients" styleClass="stat-watermark-icon" StackPane.alignment="TOP_RIGHT"/>
-            <VBox spacing="10">
-                <StackPane fx:id="badgePatients" styleClass="stat-icon-badge, stat-badge-teal"/>
-                <Label text="Total Patients:" styleClass="card-title"/>
-                <Label fx:id="totalPatientsLabel" text="0" styleClass="card-value"/>
-            </VBox>
-        </StackPane>
-
-        <StackPane styleClass="stat-card" GridPane.columnIndex="1">
-            <StackPane fx:id="watermarkDoctors" styleClass="stat-watermark-icon" StackPane.alignment="TOP_RIGHT"/>
-            <VBox spacing="10">
-                <StackPane fx:id="badgeDoctors" styleClass="stat-icon-badge, stat-badge-navy"/>
-                <Label text="Total Doctors:" styleClass="card-title"/>
-                <Label fx:id="totalDoctorsLabel" text="0" styleClass="card-value"/>
-            </VBox>
-        </StackPane>
-
-        <StackPane styleClass="stat-card" GridPane.columnIndex="2">
-            <StackPane fx:id="watermarkAppointments" styleClass="stat-watermark-icon" StackPane.alignment="TOP_RIGHT"/>
-            <VBox spacing="10">
-                <StackPane fx:id="badgeAppointments" styleClass="stat-icon-badge, stat-badge-slate-blue"/>
-                <Label text="Total Appointments:" styleClass="card-title"/>
-                <Label fx:id="totalAppointmentsLabel" text="0" styleClass="card-value"/>
-            </VBox>
-        </StackPane>
-
-        <StackPane styleClass="stat-card" GridPane.columnIndex="3">
-            <StackPane fx:id="watermarkToday" styleClass="stat-watermark-icon" StackPane.alignment="TOP_RIGHT"/>
-            <VBox spacing="10">
-                <StackPane fx:id="badgeToday" styleClass="stat-icon-badge, stat-badge-steel"/>
-                <Label text="Today's Appointments:" styleClass="card-title"/>
-                <Label fx:id="todayAppointmentsLabel" text="0" styleClass="card-value"/>
-            </VBox>
-        </StackPane>
-
-        <StackPane styleClass="stat-card" GridPane.columnIndex="4">
-            <StackPane fx:id="watermarkRevenue" styleClass="stat-watermark-icon" StackPane.alignment="TOP_RIGHT"/>
-            <VBox spacing="10">
-                <StackPane fx:id="badgeRevenue" styleClass="stat-icon-badge, stat-badge-deep-teal"/>
-                <Label text="Monthly Revenue:" styleClass="card-title"/>
-                <Label fx:id="monthlyRevenueLabel" text="\$0" styleClass="card-value"/>
-                <Label fx:id="revenueTrendLabel" text=""/>
-            </VBox>
-        </StackPane>
-    </GridPane>
-
-    <!-- ============ SCHEDULE + RECENT REGISTRATIONS ============ -->
-    <GridPane hgap="16" vgap="16" VBox.vgrow="ALWAYS">
-        <columnConstraints>
-            <ColumnConstraints percentWidth="34"/>
-            <ColumnConstraints percentWidth="66"/>
-        </columnConstraints>
-
-        <VBox styleClass="card" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
-            <HBox alignment="CENTER_LEFT">
-                <Label text="Today's Schedule" style="-fx-font-weight: bold;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="View All" styleClass="btn-secondary" onAction="#handleViewAllAppointments" style="-fx-font-size: 11px; -fx-padding: 4 10 4 10;"/>
-            </HBox>
-            <VBox fx:id="todayScheduleBox" spacing="10" VBox.vgrow="ALWAYS"/>
+        <!-- 1. Total Patients -->
+        <VBox styleClass="stat-card" GridPane.columnIndex="0" spacing="6">
+            <StackPane fx:id="badgePatients" managed="false" visible="false"/>
+            <StackPane fx:id="watermarkPatients" managed="false" visible="false"/>
+            <Label text="TOTAL PATIENTS" styleClass="stat-label"/>
+            <Label fx:id="totalPatientsLabel" text="0" styleClass="card-value"/>
+            <Label text="Registered in system" styleClass="stat-subtext"/>
         </VBox>
 
+        <!-- 2. Total Doctors -->
+        <VBox styleClass="stat-card" GridPane.columnIndex="1" spacing="6">
+            <StackPane fx:id="badgeDoctors" managed="false" visible="false"/>
+            <StackPane fx:id="watermarkDoctors" managed="false" visible="false"/>
+            <Label text="TOTAL DOCTORS" styleClass="stat-label"/>
+            <Label fx:id="totalDoctorsLabel" text="0" styleClass="card-value"/>
+            <Label text="Active medical staff" styleClass="stat-subtext"/>
+        </VBox>
+
+        <!-- 3. Total Appointments -->
+        <VBox styleClass="stat-card" GridPane.columnIndex="2" spacing="6">
+            <StackPane fx:id="badgeAppointments" managed="false" visible="false"/>
+            <StackPane fx:id="watermarkAppointments" managed="false" visible="false"/>
+            <Label text="TOTAL APPOINTMENTS" styleClass="stat-label"/>
+            <Label fx:id="totalAppointmentsLabel" text="0" styleClass="card-value"/>
+            <Label text="All-time scheduled" styleClass="stat-subtext"/>
+        </VBox>
+
+        <!-- 4. Today's Bookings -->
+        <VBox styleClass="stat-card" GridPane.columnIndex="3" spacing="6">
+            <StackPane fx:id="badgeToday" managed="false" visible="false"/>
+            <StackPane fx:id="watermarkToday" managed="false" visible="false"/>
+            <Label text="TODAY'S BOOKINGS" styleClass="stat-label"/>
+            <Label fx:id="todayAppointmentsLabel" text="0" styleClass="card-value"/>
+            <Label text="Appointments today" styleClass="stat-subtext"/>
+        </VBox>
+
+        <!-- 5. Monthly Revenue -->
+        <VBox styleClass="stat-card" GridPane.columnIndex="4" spacing="6">
+            <StackPane fx:id="badgeRevenue" managed="false" visible="false"/>
+            <StackPane fx:id="watermarkRevenue" managed="false" visible="false"/>
+            <Label text="MONTHLY REVENUE" styleClass="stat-label"/>
+            <Label fx:id="monthlyRevenueLabel" text="\$0.00" styleClass="card-value"/>
+            <Label fx:id="revenueTrendLabel" text="Paid invoices this month" styleClass="stat-subtext-success"/>
+        </VBox>
+    </GridPane>
+
+    <!-- Schedule + Recent Registrations -->
+    <GridPane hgap="16" vgap="16" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="35"/>
+            <ColumnConstraints percentWidth="65"/>
+        </columnConstraints>
+
+        <!-- Left: Today's Schedule -->
+        <VBox styleClass="card" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Today's Schedule" styleClass="section-title" style="-fx-font-size: 14px;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="View All" styleClass="btn-secondary" onAction="#handleViewAllAppointments" style="-fx-font-size: 11px; -fx-padding: 4 10;"/>
+            </HBox>
+            <VBox fx:id="todayScheduleBox" spacing="10" alignment="CENTER" VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- Right: Recent Registrations -->
         <VBox styleClass="card" spacing="12" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <HBox styleClass="search-box" alignment="CENTER_LEFT" spacing="6" HBox.hgrow="ALWAYS">
@@ -116,23 +119,26 @@
                 <ToggleButton fx:id="showDoctorsToggle" text="Doctors" styleClass="btn-secondary" toggleGroup="$recentTypeGroup" onAction="#handleRecentFilterChanged"/>
             </HBox>
 
-            <TableView fx:id="recentTable" VBox.vgrow="ALWAYS">
+            <TableView fx:id="recentTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colType" text="Type" prefWidth="90"/>
-                    <TableColumn fx:id="colName" text="Name" prefWidth="200"/>
-                    <TableColumn fx:id="colCode" text="ID" prefWidth="110"/>
-                    <TableColumn fx:id="colAdded" text="Added On" prefWidth="120"/>
+                    <TableColumn fx:id="colType" text="Type" minWidth="80" prefWidth="90" styleClass="col-center"/>
+                    <TableColumn fx:id="colName" text="Name" minWidth="150" prefWidth="180"/>
+                    <TableColumn fx:id="colCode" text="ID" minWidth="90" prefWidth="105"/>
+                    <TableColumn fx:id="colAdded" text="Added On" minWidth="95" prefWidth="115"/>
                 </columns>
             </TableView>
         </VBox>
     </GridPane>
 
-    <!-- ============ ROOM OCCUPANCY STRIP ============ -->
-    <HBox styleClass="card" alignment="CENTER_LEFT" spacing="14">
+    <!-- Bottom: Room Occupancy Strip -->
+    <HBox styleClass="card" alignment="CENTER_LEFT" spacing="14" style="-fx-padding: 12 18;">
         <StackPane fx:id="roomIconContainer" prefWidth="26" prefHeight="26"/>
         <VBox spacing="2">
-            <Label text="Room Occupancy" style="-fx-font-weight: bold;"/>
-            <Label fx:id="roomOccupancyLabel" text="0 / 0 beds occupied" styleClass="muted"/>
+            <Label text="Room Occupancy" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+            <Label fx:id="roomOccupancyLabel" text="0 / 0 beds occupied" styleClass="muted" style="-fx-font-size: 11px;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="Manage Rooms" styleClass="btn-secondary" onAction="#handleManageRooms"/>

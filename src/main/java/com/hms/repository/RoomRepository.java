@@ -1,3 +1,4 @@
+
 package com.hms.repository;
 
 import com.hms.database.DatabaseConnection;
@@ -10,35 +11,83 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data access for the rooms table. Occupancy (occupant_count) is computed
- * live via a correlated subquery against patients.room_id rather than
- * stored redundantly, so it can never drift out of sync with reality.
- */
 public class RoomRepository {
 
     private static final String SELECT_WITH_OCCUPANCY =
             "SELECT r.*, (SELECT COUNT(*) FROM patients p WHERE p.room_id = r.id) AS occupant_count FROM rooms r ";
 
     public List<Room> findAll() {
-        String sql = SELECT_WITH_OCCUPANCY + "ORDER BY r.room_code";
-        List<Room> result = new ArrayList<>();
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                result.add(map(rs));
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("Failed to load rooms.", e);
-        }
-        return result;
+        return search(null, "All Types", "All Status", "Room Code (A-Z)");
     }
 
-    /** Rooms that still have at least one free bed - used to populate the "assign room" dropdown. */
     public List<Room> findAvailable() {
-        List<Room> all = findAll();
-        all.removeIf(Room::isFull);
-        return all;
+        return search(null, "All Types", "Available (Has Space)", "Room Code (A-Z)");
+    }
+
+    public List<Room> search(String keyword, String typeFilter, String availabilityFilter, String sortBy) {
+        StringBuilder sql = new StringBuilder(SELECT_WITH_OCCUPANCY + "WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        // 1. Keyword search (Room Code, Floor, Notes)
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (r.room_code LIKE ? OR r.floor LIKE ? OR r.notes LIKE ?)");
+            String like = "%" + keyword.trim() + "%";
+            params.add(like);
+            params.add(like);
+            params.add(like);
+        }
+
+        // 2. Room Type Filter (Resolves by Display Name or Enum Name)
+        if (typeFilter != null && !typeFilter.isBlank() && !typeFilter.equalsIgnoreCase("All Types")) {
+            String enumName = null;
+            for (RoomType rt : RoomType.values()) {
+                if (rt.getDisplayName().equalsIgnoreCase(typeFilter.trim()) || rt.name().equalsIgnoreCase(typeFilter.trim())) {
+                    enumName = rt.name();
+                    break;
+                }
+            }
+            if (enumName != null) {
+                sql.append(" AND r.room_type = ?");
+                params.add(enumName);
+            }
+        }
+
+        // 3. Availability Filter
+        if ("Available (Has Space)".equalsIgnoreCase(availabilityFilter)) {
+            sql.append(" AND (SELECT COUNT(*) FROM patients p WHERE p.room_id = r.id) < r.capacity");
+        } else if ("Full (100% Occupied)".equalsIgnoreCase(availabilityFilter)) {
+            sql.append(" AND (SELECT COUNT(*) FROM patients p WHERE p.room_id = r.id) >= r.capacity");
+        }
+
+        // 4. Sorting logic
+        if ("Room Code (Z-A)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY r.room_code DESC");
+        } else if ("Most Available".equalsIgnoreCase(sortBy)) {
+            // (capacity - occupant_count) descending
+            sql.append(" ORDER BY (r.capacity - (SELECT COUNT(*) FROM patients p WHERE p.room_id = r.id)) DESC");
+        } else if ("Highest Occupancy".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY (SELECT COUNT(*) FROM patients p WHERE p.room_id = r.id) DESC");
+        } else if ("Floor".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY r.floor ASC, r.room_code ASC");
+        } else {
+            // Default: Room Code (A-Z)
+            sql.append(" ORDER BY r.room_code ASC");
+        }
+
+        List<Room> result = new ArrayList<>();
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(map(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to search rooms.", e);
+        }
+        return result;
     }
 
     public Optional<Room> findById(int id) {
@@ -105,7 +154,6 @@ public class RoomRepository {
         }
     }
 
-    /** Assigns a patient to a room (admission). */
     public void assignPatient(int patientId, int roomId) {
         String sql = "UPDATE patients SET room_id = ? WHERE id = ?";
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
@@ -117,7 +165,6 @@ public class RoomRepository {
         }
     }
 
-    /** Releases a patient from their current room (discharge). */
     public void releasePatient(int patientId) {
         String sql = "UPDATE patients SET room_id = NULL WHERE id = ?";
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {

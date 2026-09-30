@@ -1,3 +1,4 @@
+
 package com.hms.repository;
 
 import com.hms.database.DatabaseConnection;
@@ -27,24 +28,60 @@ public class AuditLogRepository {
             ps.setString(4, details);
             ps.executeUpdate();
         } catch (SQLException e) {
-            // Audit logging failure should never break the actual operation it's
-            // recording - log-and-continue rather than propagating.
             System.err.println("Failed to write audit log entry: " + e.getMessage());
         }
     }
 
     public List<AuditLog> findRecent(int limit) {
-        String sql = "SELECT * FROM audit_log ORDER BY occurred_at DESC LIMIT ?";
+        return search(null, "All Actions", "Time (Newest)", limit);
+    }
+
+    public List<AuditLog> search(String keyword, String actionFilter, String sortBy, int limit) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM audit_log WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        // 1. Text search across username, action, and details
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (username LIKE ? OR action LIKE ? OR details LIKE ?)");
+            String like = "%" + keyword.trim() + "%";
+            params.add(like);
+            params.add(like);
+            params.add(like);
+        }
+
+        // 2. Action filter matching
+        if (actionFilter != null && !actionFilter.isBlank() && !actionFilter.equalsIgnoreCase("All Actions")) {
+            sql.append(" AND action LIKE ?");
+            params.add("%" + actionFilter.trim() + "%");
+        }
+
+        // 3. Sorting logic
+        if ("Time (Oldest)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY occurred_at ASC");
+        } else if ("User (A-Z)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY username ASC, occurred_at DESC");
+        } else if ("Action (A-Z)".equalsIgnoreCase(sortBy)) {
+            sql.append(" ORDER BY action ASC, occurred_at DESC");
+        } else {
+            // Default: Time (Newest)
+            sql.append(" ORDER BY occurred_at DESC");
+        }
+
+        sql.append(" LIMIT ?");
+        params.add(limit > 0 ? limit : 200);
+
         List<AuditLog> result = new ArrayList<>();
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
-            ps.setInt(1, limit);
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     result.add(map(rs));
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Failed to load audit log.", e);
+            throw new DataAccessException("Failed to search audit log.", e);
         }
         return result;
     }

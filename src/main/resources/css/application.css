@@ -1,7 +1,4 @@
 
-/* Hospital Management System - Light Theme
-   Clean modern clinical palette: refined teal, soft surfaces, slate text. */
-
 .root {
     -fx-accent: #0f9d8c;
     -fx-primary: #0f9d8c;
@@ -11,45 +8,132 @@
     -fx-text-muted: #64748b;
     -fx-border-soft: #e2e8f0;
 
-    /* Modern crisp font typography stack */
-    -fx-font-family: "Segoe UI Variable Display", "Segoe UI", "Inter", -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
+    -fx-font-family: "Segoe UI Variable Display", "Segoe UI", "Inter", sans-serif;
     -fx-font-size: 13px;
     -fx-font-smoothing-type: lcd;
     -fx-background-color: -fx-bg;
 }
 
-/* ===== Layout shells ===== */
+/* ===================================================
+   1. EMPTY SOLID DARK NAVY LOGIN SCREEN
+   =================================================== */
+.login-root {
+    -fx-background-color: #1b2b38;
+}
+
+.login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-padding: 38 36 38 36;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.28), 35, 0, 0, 10);
+}
+
+.login-brand {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f9d8c;
+}
+
+.login-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #475569;
+}
+
+.login-subtitle {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+}
+
+.error-text {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 12px;
+}
+
+/* Single-Border Password Input Container & Clean Eye Toggle */
+.input-with-icon {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 8;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-radius: 8;
+    -fx-padding: 0 8 0 12;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.input-with-icon:focus-within {
+    -fx-border-color: -fx-accent;
+}
+
+/* Completely strip inner border, background, and focus glow to eliminate double-border */
+.input-with-icon .text-field,
+.input-with-icon .password-field,
+.input-borderless,
+.input-borderless:focused {
+    -fx-background-color: transparent !important;
+    -fx-background-insets: 0 !important;
+    -fx-border-color: transparent !important;
+    -fx-border-width: 0 !important;
+    -fx-padding: 8 0 8 0;
+    -fx-focus-color: transparent !important;
+    -fx-faint-focus-color: transparent !important;
+    -fx-prompt-text-fill: #94a3b8;
+}
+
+.icon-toggle-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4 6 4 6;
+    -fx-cursor: hand;
+    -fx-opacity: 0.65;
+}
+
+.icon-toggle-button:hover {
+    -fx-opacity: 1.0;
+}
+
+/* ===================================================
+   2. SIDEBAR NAVIGATION
+   =================================================== */
 .sidebar {
     -fx-background-color: #123b3a;
 }
+
 .sidebar-title {
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20px;
     -fx-font-weight: 800;
 }
+
 .sidebar-subtitle {
     -fx-text-fill: #9fd8cf;
     -fx-font-size: 10px;
     -fx-font-weight: 600;
 }
+
 .sidebar-button {
     -fx-background-color: transparent;
     -fx-text-fill: #d4ece8;
     -fx-font-size: 13px;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 10 16 10 16;
+    -fx-padding: 10 14 10 14;
+    -fx-graphic-text-gap: 12px;
     -fx-background-radius: 8;
     -fx-cursor: hand;
+    -fx-wrap-text: false;
 }
+
 .sidebar-button:hover {
     -fx-background-color: #1c5652;
 }
+
 .sidebar-button-active {
     -fx-background-color: #0f9d8c;
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
 
+/* ===================================================
+   3. TOPBAR & SHELL
+   =================================================== */
 .topbar {
     -fx-background-color: -fx-surface;
     -fx-border-color: transparent transparent -fx-border-soft transparent;
@@ -62,71 +146,26 @@
     -fx-padding: 20;
 }
 
-/* ===== Cards ===== */
-.card {
+#themeToggleButton {
     -fx-background-color: -fx-surface;
-    -fx-background-radius: 14;
-    -fx-padding: 18;
-    -fx-border-color: #edf2f7;
-    -fx-border-radius: 14;
-    -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.06), 12, 0, 0, 4);
-}
-.card-title {
-    -fx-text-fill: -fx-text-muted;
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-}
-.card-value {
-    -fx-text-fill: -fx-text-main;
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-}
-.card-icon-bg {
-    -fx-background-radius: 12;
-    -fx-padding: 10;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-min-width: 36px;
+    -fx-min-height: 36px;
+    -fx-pref-width: 36px;
+    -fx-pref-height: 36px;
+    -fx-max-width: 36px;
+    -fx-max-height: 36px;
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
 }
 
-/* ===== Dashboard stat cards (icon-badge style) ===== */
-.stat-card {
-    -fx-background-color: -fx-surface;
-    -fx-background-radius: 14;
-    -fx-padding: 16;
-    -fx-border-color: #edf2f7;
-    -fx-border-radius: 14;
-    -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.06), 12, 0, 0, 4);
-}
-.stat-icon-badge {
-    -fx-min-width: 36;
-    -fx-min-height: 36;
-    -fx-max-width: 36;
-    -fx-max-height: 36;
-    -fx-background-radius: 50%;
-    -fx-alignment: center;
-    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.14), 4, 0, 0, 2);
+#themeToggleButton:hover {
+    -fx-background-color: #f1f5f9;
 }
 
-.stat-badge-teal {
-    -fx-background-color: linear-gradient(to bottom right, #17b3a0, #0c7d6f);
-}
-.stat-badge-navy {
-    -fx-background-color: linear-gradient(to bottom right, #1c3f52, #0d2530);
-}
-.stat-badge-slate-blue {
-    -fx-background-color: linear-gradient(to bottom right, #4f7ea8, #2c5273);
-}
-.stat-badge-steel {
-    -fx-background-color: linear-gradient(to bottom right, #5c6f85, #37485c);
-}
-.stat-badge-deep-teal {
-    -fx-background-color: linear-gradient(to bottom right, #0d8577, #0a5c52);
-}
-.stat-watermark-icon {
-    -fx-opacity: 0.08;
-}
-
-/* ===== Notification bell badge ===== */
 .notification-badge {
     -fx-background-color: #dc2626;
     -fx-text-fill: white;
@@ -138,7 +177,64 @@
     -fx-translate-y: -6;
 }
 
-/* ===== Buttons ===== */
+/* ===================================================
+   4. DASHBOARD & CARDS
+   =================================================== */
+/* Clean Medium-Gray Heading with Lexend Font */
+.built-by-heading {
+    -fx-font-family: "Lexend", "Segoe UI Variable Display", "Segoe UI", sans-serif;
+    -fx-font-size: 19px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #64748b !important; /* Soft Slate Gray - never solid black */
+}
+
+.card {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 14;
+    -fx-padding: 18;
+    -fx-border-color: #edf2f7;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(16, 24, 40, 0.06), 12, 0, 0, 4);
+}
+
+.stat-card {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 14;
+    -fx-padding: 16 18;
+    -fx-border-color: #edf2f7;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(16, 24, 40, 0.06), 10, 0, 0, 3);
+}
+
+.stat-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+}
+
+.card-value {
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+}
+
+.stat-subtext {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+}
+
+.stat-subtext-success {
+    -fx-text-fill: #0d9488;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+/* ===================================================
+   5. BUTTONS & INPUT CONTROLS
+   =================================================== */
 .btn-primary {
     -fx-background-color: #0f9d8c;
     -fx-text-fill: white;
@@ -147,9 +243,11 @@
     -fx-padding: 9 18 9 18;
     -fx-cursor: hand;
 }
+
 .btn-primary:hover {
     -fx-background-color: #0c8375;
 }
+
 .btn-secondary {
     -fx-background-color: -fx-surface;
     -fx-text-fill: -fx-text-main;
@@ -159,9 +257,11 @@
     -fx-padding: 9 18 9 18;
     -fx-cursor: hand;
 }
+
 .btn-secondary:hover {
     -fx-background-color: #f1f5f9;
 }
+
 .btn-danger {
     -fx-background-color: #fef2f2;
     -fx-text-fill: #dc2626;
@@ -171,32 +271,35 @@
     -fx-padding: 3 8 3 8;
     -fx-cursor: hand;
     -fx-font-size: 11px;
-    -fx-text-overrun: clip;
 }
+
 .btn-danger:hover {
     -fx-background-color: #fee2e2;
 }
 
-/* ===== Inputs ===== */
 .text-field, .password-field, .combo-box, .date-picker, .text-area {
     -fx-background-color: -fx-surface;
     -fx-background-radius: 8;
     -fx-border-color: -fx-border-soft;
     -fx-border-radius: 8;
-    -fx-padding: 6 10 6 10;
+    -fx-padding: 6 12 6 12;
 }
+
 .text-field:focused, .password-field:focused, .combo-box:focused, .date-picker:focused {
     -fx-border-color: -fx-accent;
 }
+
 .search-box {
     -fx-background-color: -fx-surface;
     -fx-background-radius: 20;
     -fx-border-color: -fx-border-soft;
     -fx-border-radius: 20;
-    -fx-padding: 6 14 6 14;
+    -fx-padding: 5 12 5 12;
 }
 
-/* ===== Table Styling & Anti-Truncation Rules ===== */
+/* ===================================================
+   6. TABLE VIEW & CENTERED ALIGNMENTS
+   =================================================== */
 .table-view {
     -fx-background-color: -fx-surface;
     -fx-background-radius: 12;
@@ -205,38 +308,39 @@
     -fx-padding: 0;
 }
 
-/* Header styling */
 .table-view .column-header-background {
     -fx-background-color: #f8fafc;
     -fx-background-radius: 12 12 0 0;
     -fx-border-color: transparent transparent -fx-border-soft transparent;
     -fx-border-width: 0 0 1 0;
+    -fx-padding: 0;
 }
 
 .table-view .column-header {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-size: 38px;
+    -fx-padding: 0 8 0 8;
 }
 
-.table-view .column-header-background .label {
+.table-view .column-header .label {
     -fx-text-fill: -fx-text-muted;
     -fx-font-weight: 700;
     -fx-font-size: 11px;
-    -fx-text-overrun: clip;
+    -fx-alignment: CENTER_LEFT;
 }
 
-/* Removes grey header filler bar */
+.table-view .column-header.col-center,
+.table-view .table-column.col-center .label,
+.table-view .col-center .label {
+    -fx-alignment: CENTER;
+    -fx-text-alignment: center;
+}
+
 .table-view .filler {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
 }
 
-.table-view .column-header-background > .show-hide-columns-button {
-    -fx-background-color: transparent;
-}
-
-/* Hide horizontal scrollbar across tables */
 .table-view .scroll-bar:horizontal {
     -fx-opacity: 0;
     -fx-padding: 0;
@@ -244,63 +348,42 @@
     -fx-max-height: 0;
 }
 
-.table-view .scroll-bar:horizontal .thumb,
-.table-view .scroll-bar:horizontal .track,
-.table-view .scroll-bar:horizontal .increment-button,
-.table-view .scroll-bar:horizontal .decrement-button {
-    -fx-pref-height: 0;
-    -fx-padding: 0;
-}
-
-/* Table rows and cells */
 .table-row-cell {
     -fx-background-color: -fx-surface;
     -fx-border-color: transparent transparent #f1f5f9 transparent;
     -fx-border-width: 0 0 1 0;
 }
+
 .table-row-cell:hover {
     -fx-background-color: #f8fafc;
 }
+
 .table-row-cell:selected {
     -fx-background-color: #e6f6f3;
 }
+
 .table-cell {
     -fx-padding: 6 8 6 8;
     -fx-alignment: CENTER_LEFT;
     -fx-border-color: transparent;
-    -fx-text-overrun: clip;
 }
 
-/* Action buttons inside Table Cells (Complete, No-Show, Cancel, Delete, etc.) */
-.table-cell .button {
-    -fx-padding: 3 6 3 6;
-    -fx-font-size: 10px;
-    -fx-font-weight: 600;
-    -fx-background-radius: 6;
-    -fx-border-radius: 6;
-    -fx-text-overrun: clip;
-    -fx-wrap-text: false;
+.table-cell.col-center {
+    -fx-alignment: CENTER;
 }
 
-/* Keeps text crisp and clearly readable when row or cell is selected */
-.table-row-cell:selected .text,
-.table-cell:selected .text,
-.table-row-cell:selected .label,
-.table-cell:selected .label {
-    -fx-fill: #1f2937;
-    -fx-text-fill: #1f2937;
-}
-
-/* ===== Badges (Prevent dots / text truncation) ===== */
+/* ===================================================
+   7. STATUS BADGES
+   =================================================== */
 .badge {
     -fx-padding: 2 6 2 6;
     -fx-background-radius: 12;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
-    -fx-text-overrun: clip;
     -fx-alignment: center;
     -fx-text-alignment: center;
 }
+
 .badge-patient   { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1; }
 .badge-doctor    { -fx-background-color: #f3e8ff; -fx-text-fill: #7e22ce; }
 .badge-scheduled { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1; }
@@ -308,139 +391,35 @@
 .badge-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #b91c1c; }
 .badge-noshow    { -fx-background-color: #fef3c7; -fx-text-fill: #92400e; }
 
-/* ===== Login screen ===== */
-.login-root {
-    -fx-background-color: #1b2b38;
-}
-.login-card {
-    -fx-background-color: white;
-    -fx-background-radius: 18;
-    -fx-padding: 40;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 35, 0, 0, 10);
-}
-.login-brand {
-    -fx-font-size: 24px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #0f9d8c;
-}
-.login-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: 700;
-    -fx-text-fill: -fx-text-main;
-}
-.login-subtitle {
-    -fx-text-fill: -fx-text-muted;
-    -fx-font-size: 12px;
-}
-.error-text {
-    -fx-text-fill: #dc2626;
-    -fx-font-size: 12px;
-}
-
-/* Vector icon shapes */
-.logo-gear-teeth {
-    -fx-fill: linear-gradient(from 15% 10% to 90% 95%, #a7b2c0 0%, #5b6d84 45%, #263850 100%);
-}
-.logo-gear-bore {
-    -fx-fill: #f7f9fa;
-}
-.logo-cross-outline {
-    -fx-fill: white;
-}
-.logo-cross {
-    -fx-fill: linear-gradient(to bottom right, #34c3af, #1b8577);
-}
-.logo-gear-teeth-sidebar {
-    -fx-fill: linear-gradient(from 15% 10% to 90% 95%, #7d92b3 0%, #4c6790 45%, #24395a 100%);
-}
-.logo-gear-bore-sidebar {
-    -fx-fill: #123b3a;
-}
-
-/* General-purpose vector icon shapes */
+/* ===================================================
+   8. VECTOR ICON STROKES & MISC
+   =================================================== */
 .icon-shape-light {
     -fx-fill: #d4ece8;
 }
+
 .icon-shape-light-stroke {
     -fx-fill: transparent;
     -fx-stroke: #d4ece8;
     -fx-stroke-width: 1.6;
 }
+
 .icon-shape-dark {
-    -fx-fill: #4b5563;
+    -fx-fill: #475569;
 }
+
 .icon-shape-dark-stroke {
     -fx-fill: transparent;
-    -fx-stroke: #4b5563;
+    -fx-stroke: #475569;
     -fx-stroke-width: 1.6;
 }
-.icon-shape-white {
-    -fx-fill: white;
-}
-.icon-shape-white-stroke {
-    -fx-fill: transparent;
-    -fx-stroke: white;
-    -fx-stroke-width: 1.6;
-}
-.moon-bite {
-    -fx-fill: -fx-surface;
-}
 
-/* Input with icon */
-.input-with-icon {
-    -fx-background-color: #f8fafc;
-    -fx-background-radius: 8;
-    -fx-border-color: -fx-border-soft;
-    -fx-border-radius: 8;
-    -fx-padding: 4 10 4 10;
-}
-.input-with-icon:focus-within {
-    -fx-border-color: -fx-accent;
-}
-.input-icon {
-    -fx-opacity: 0.6;
-    -fx-font-size: 13px;
-}
-.field-icon-bg {
-    -fx-fill: #9aa5b1;
-}
-.field-icon-fg {
-    -fx-fill: #f8fafc;
-}
-.field-icon-shackle-stroke {
-    -fx-fill: transparent;
-    -fx-stroke: #9aa5b1;
-    -fx-stroke-width: 2;
-}
-.input-borderless {
-    -fx-background-color: transparent, transparent;
-    -fx-background-insets: 0, 0;
-    -fx-border-color: transparent;
-    -fx-padding: 6 0 6 0;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-prompt-text-fill: #94a3b8;
-}
-.input-borderless:focused {
-    -fx-border-color: transparent;
-    -fx-background-insets: 0, 0;
-}
-.icon-toggle-button {
-    -fx-background-color: transparent;
-    -fx-padding: 2 4 2 4;
-    -fx-cursor: hand;
-    -fx-opacity: 0.6;
-}
-.icon-toggle-button:hover {
-    -fx-opacity: 1;
-}
-
-/* Misc text */
 .section-title {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: -fx-text-main;
 }
+
 .muted {
     -fx-text-fill: -fx-text-muted;
 }

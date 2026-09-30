@@ -1,3 +1,4 @@
+
 package com.hms.controller;
 
 import com.hms.model.User;
@@ -18,33 +19,25 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Controller for the application shell: sidebar navigation, top bar (clock,
- * notifications, dark mode toggle, profile avatar), and swapping the center
- * content pane between feature views.
- */
 public class MainLayoutController {
 
     @FXML private StackPane contentArea;
-  //  @FXML private StackPane sidebarLogoContainer;
-    @FXML private StackPane searchIconContainer;
     @FXML private Label pageTitleLabel;
     @FXML private Label dateTimeLabel;
     @FXML private Label userNameLabel;
     @FXML private Label userRoleLabel;
     @FXML private ImageView avatarImageView;
-    @FXML private TextField globalSearchField;
     @FXML private Button themeToggleButton;
     @FXML private Button notificationButton;
     @FXML private Label notificationBadge;
@@ -62,7 +55,8 @@ public class MainLayoutController {
 
     private final AuthService authService = new AuthService();
     private final NotificationService notificationService = new NotificationService();
-    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("MMM dd, yyyy | hh:mm a");
+    // Live ticking clock with explicit seconds
+    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("MMM dd, yyyy | hh:mm:ss a");
     private static final double NAV_ICON_SIZE = 16;
 
     @FXML
@@ -82,14 +76,7 @@ public class MainLayoutController {
         showDashboard();
     }
 
-    /**
-     * Every icon in the app shell is a vector shape from IconFactory, not
-     * emoji - emoji glyphs were confirmed (via screenshots on the actual
-     * target Windows machine) to render as blank boxes in JavaFX.
-     */
     private void buildIcons() {
-//        sidebarLogoContainer.getChildren().add(IconFactory.gearCrossLogo(56, true));
-        searchIconContainer.getChildren().add(IconFactory.search(14, "icon-shape-dark"));
         notificationButton.setGraphic(IconFactory.bell(15, "icon-shape-dark"));
         themeToggleButton.setGraphic(IconFactory.moon(15, "icon-shape-dark"));
 
@@ -117,7 +104,7 @@ public class MainLayoutController {
                 case "MEDICAL_RECORDS" -> showMedicalRecords();
                 case "BILLING" -> showBilling();
                 case "REPORTS" -> showReports();
-                default -> { /* unknown route - no-op */ }
+                default -> {}
             }
         });
     }
@@ -125,12 +112,7 @@ public class MainLayoutController {
     private void refreshAvatar() {
         User current = SessionManager.getInstance().getCurrentUser();
         Image image = current != null ? ImageUtil.loadAvatar(current.getAvatarPath()) : null;
-        if (image != null) {
-            avatarImageView.setImage(image);
-        } else {
-            // No photo uploaded yet - show a neutral vector placeholder instead of a blank frame.
-            avatarImageView.setImage(null);
-        }
+        avatarImageView.setImage(image);
     }
 
     private void refreshNotificationBadge() {
@@ -142,6 +124,7 @@ public class MainLayoutController {
 
     private void applyRolePermissions() {
         User current = current();
+        if (current == null) return;
         boolean isAdmin = current.getRole() == UserRole.ADMIN;
         boolean isDoctor = current.getRole() == UserRole.DOCTOR;
         boolean isReceptionist = current.getRole() == UserRole.RECEPTIONIST;
@@ -165,8 +148,10 @@ public class MainLayoutController {
     }
 
     private void startClock() {
+        // Set time immediately on load, then tick every second
+        dateTimeLabel.setText(LocalDateTime.now().format(DATETIME_FORMAT));
         Timeline clock = new Timeline(new KeyFrame(Duration.seconds(1), e ->
-                dateTimeLabel.setText(java.time.LocalDateTime.now().format(DATETIME_FORMAT))));
+                dateTimeLabel.setText(LocalDateTime.now().format(DATETIME_FORMAT))));
         clock.setCycleCount(Timeline.INDEFINITE);
         clock.play();
     }

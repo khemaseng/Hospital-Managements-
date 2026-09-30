@@ -1,22 +1,19 @@
+
 package com.hms.controller;
 
 import com.hms.model.Appointment;
 import com.hms.model.RecentRegistration;
-import com.hms.model.User;
 import com.hms.service.AppointmentService;
 import com.hms.service.DashboardService;
 import com.hms.util.DialogUtil;
 import com.hms.util.IconFactory;
-import com.hms.util.SessionManager;
 import com.hms.view.NavigationBus;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -70,7 +67,12 @@ public class DashboardController {
     @FXML
     public void initialize() {
         buildIcons();
-        greetingLabel.setText(greetingForTime() + (currentUserFirstName() != null ? ", " + currentUserFirstName() : ""));
+
+        // Sets the clean dark-gray credit label instead of the default greeting
+        if (greetingLabel != null) {
+            greetingLabel.setText("Built by Seng SilKhema");
+            greetingLabel.getStyleClass().setAll("built-by-heading");
+        }
 
         DashboardService.DashboardStats stats = dashboardService.getStats();
         totalPatientsLabel.setText(String.valueOf(stats.totalPatients()));
@@ -91,45 +93,27 @@ public class DashboardController {
         refreshRecentRegistrations();
     }
 
-    /**
-     * Every icon here is a vector shape from IconFactory, not emoji - emoji
-     * glyphs were confirmed (via screenshots on the actual target Windows
-     * machine) to render as blank boxes in JavaFX. Uses setAll() rather
-     * than add() since initialize() doubles as this screen's refresh
-     * method (called again after quick-add actions), so containers must
-     * not accumulate duplicate icon children on repeat calls.
-     */
     private void buildIcons() {
-        badgePatients.getChildren().setAll(IconFactory.person(17, "icon-shape-white"));
-        badgeDoctors.getChildren().setAll(IconFactory.doctorPerson(17, "icon-shape-white", "icon-shape-white"));
-        badgeAppointments.getChildren().setAll(IconFactory.calendar(17, "icon-shape-white"));
-        badgeToday.getChildren().setAll(IconFactory.calendar(17, "icon-shape-white"));
-        badgeRevenue.getChildren().setAll(IconFactory.cash(17, "icon-shape-white"));
+        // Clear badge and watermark containers so the cards stay clean without icon clutter
+        clearContainers(badgePatients, badgeDoctors, badgeAppointments, badgeToday, badgeRevenue);
+        clearContainers(watermarkPatients, watermarkDoctors, watermarkAppointments, watermarkToday, watermarkRevenue);
 
-        watermarkPatients.getChildren().setAll(IconFactory.personOutline(46, "icon-shape-dark"));
-        watermarkDoctors.getChildren().setAll(IconFactory.doctorPersonOutline(46, "icon-shape-dark"));
-        watermarkAppointments.getChildren().setAll(IconFactory.calendar(46, "icon-shape-dark"));
-        watermarkToday.getChildren().setAll(IconFactory.calendar(46, "icon-shape-dark"));
-        watermarkRevenue.getChildren().setAll(IconFactory.cash(46, "icon-shape-dark"));
-
-        roomIconContainer.getChildren().setAll(IconFactory.bed(24, "icon-shape-dark"));
-        recentSearchIconContainer.getChildren().setAll(IconFactory.search(14, "icon-shape-dark"));
-    }
-
-    private String greetingForTime() {
-        int hour = LocalTime.now().getHour();
-        if (hour < 12) return "Good morning";
-        if (hour < 17) return "Good afternoon";
-        return "Good evening";
-    }
-
-    private String currentUserFirstName() {
-        User current = SessionManager.getInstance().getCurrentUser();
-        if (current == null || current.getFullName() == null) {
-            return null;
+        if (roomIconContainer != null) {
+            roomIconContainer.getChildren().setAll(IconFactory.bed(24, "icon-shape-dark"));
         }
-        String[] parts = current.getFullName().trim().split("\\s+");
-        return parts.length > 0 ? parts[0] : null;
+        if (recentSearchIconContainer != null) {
+            recentSearchIconContainer.getChildren().setAll(IconFactory.search(14, "icon-shape-dark"));
+        }
+    }
+
+    private void clearContainers(StackPane... panes) {
+        for (StackPane pane : panes) {
+            if (pane != null) {
+                pane.getChildren().clear();
+                pane.setVisible(false);
+                pane.setManaged(false);
+            }
+        }
     }
 
     private void populateTodaySchedule() {
@@ -175,8 +159,8 @@ public class DashboardController {
     }
 
     private void setupRecentRegistrationsTable() {
-        colType.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().type()));
-        colType.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+        colType.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().type()));
+        colType.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String type, boolean empty) {
                 super.updateItem(type, empty);
@@ -186,12 +170,13 @@ public class DashboardController {
                 }
                 Label badge = new Label(type);
                 badge.getStyleClass().addAll("badge", type.equals("Doctor") ? "badge-completed" : "badge-scheduled");
+                setAlignment(Pos.CENTER);
                 setGraphic(badge);
             }
         });
-        colName.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().name()));
-        colCode.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().code()));
-        colAdded.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().addedOn()));
+        colName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().name()));
+        colCode.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().code()));
+        colAdded.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().addedOn()));
         recentTable.setItems(recentRegistrations);
         recentTable.setPlaceholder(new Label("No recent registrations to show."));
     }
@@ -203,9 +188,9 @@ public class DashboardController {
 
     private void refreshRecentRegistrations() {
         List<RecentRegistration> all = dashboardService.getRecentRegistrations(10);
-        String keyword = recentSearchField.getText();
-        boolean patientsOnly = showPatientsToggle.isSelected();
-        boolean doctorsOnly = showDoctorsToggle.isSelected();
+        String keyword = recentSearchField != null ? recentSearchField.getText() : "";
+        boolean patientsOnly = showPatientsToggle != null && showPatientsToggle.isSelected();
+        boolean doctorsOnly = showDoctorsToggle != null && showDoctorsToggle.isSelected();
 
         List<RecentRegistration> filtered = all.stream()
                 .filter(r -> !patientsOnly || r.type().equals("Patient"))

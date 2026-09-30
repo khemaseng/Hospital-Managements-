@@ -1,9 +1,11 @@
+
 package com.hms.controller;
 
 import com.hms.model.Appointment;
 import com.hms.model.AppointmentStatus;
 import com.hms.service.AppointmentService;
 import com.hms.util.DialogUtil;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -19,6 +21,7 @@ public class AppointmentController {
 
     @FXML private TextField searchField;
     @FXML private ComboBox<String> statusFilter;
+    @FXML private ComboBox<String> sortFilter;
     @FXML private Label resultCountLabel;
     @FXML private TableView<Appointment> appointmentTable;
     @FXML private TableColumn<Appointment, String> colCode;
@@ -41,11 +44,11 @@ public class AppointmentController {
         colPatient.setCellValueFactory(new PropertyValueFactory<>("patientName"));
         colDoctor.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
         colDepartment.setCellValueFactory(new PropertyValueFactory<>("department"));
-        colDate.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        colDate.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getAppointmentDate().format(DATE_FORMAT)));
-        colTime.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        colTime.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getAppointmentTime().format(TIME_FORMAT)));
-        colStatus.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+        colStatus.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getStatus().name()));
         colStatus.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -57,13 +60,30 @@ public class AppointmentController {
                 }
                 Label badge = new Label(status);
                 badge.getStyleClass().addAll("badge", badgeClass(status));
+                setAlignment(javafx.geometry.Pos.CENTER);
                 setGraphic(badge);
             }
         });
         addActionButtons();
 
-        statusFilter.getItems().addAll("All", "SCHEDULED", "COMPLETED", "CANCELLED", "NO_SHOW");
+        // Populate Status Filters
+        statusFilter.getItems().setAll("All", "SCHEDULED", "COMPLETED", "CANCELLED", "NO_SHOW");
         statusFilter.setValue("All");
+
+        // Populate Sort Options
+        sortFilter.getItems().setAll(
+                "Date (Newest)",
+                "Date (Oldest)",
+                "Patient (A-Z)",
+                "Doctor (A-Z)",
+                "Status"
+        );
+        sortFilter.setValue("Date (Newest)");
+
+        // ចង Listener ផ្ទាល់ដើម្បីឱ្យ Table ធ្វើបច្ចុប្បន្នភាពភ្លាមៗពេល User ចុចរើស
+        statusFilter.valueProperty().addListener((obs, oldVal, newVal) -> refresh());
+        sortFilter.valueProperty().addListener((obs, oldVal, newVal) -> refresh());
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> refresh());
 
         appointmentTable.setItems(appointments);
         refresh();
@@ -79,9 +99,15 @@ public class AppointmentController {
     }
 
     private void refresh() {
-        List<Appointment> results = appointmentService.search(searchField.getText(), statusFilter.getValue());
+        String keyword = searchField != null ? searchField.getText() : "";
+        String status = statusFilter != null && statusFilter.getValue() != null ? statusFilter.getValue() : "All";
+        String sortBy = sortFilter != null && sortFilter.getValue() != null ? sortFilter.getValue() : "Date (Newest)";
+
+        List<Appointment> results = appointmentService.search(keyword, status, sortBy);
         appointments.setAll(results);
-        resultCountLabel.setText(results.size() + " appointment(s)");
+        if (resultCountLabel != null) {
+            resultCountLabel.setText(results.size() + " appointment(s)");
+        }
     }
 
     @FXML
@@ -149,10 +175,7 @@ public class AppointmentController {
                 noShowBtn.getStyleClass().add("btn-secondary");
                 cancelBtn.getStyleClass().add("btn-secondary");
                 deleteBtn.getStyleClass().add("btn-danger");
-                completeBtn.setStyle("-fx-font-size: 10px; -fx-padding: 4 8 4 8;");
-                noShowBtn.setStyle("-fx-font-size: 10px; -fx-padding: 4 8 4 8;");
-                cancelBtn.setStyle("-fx-font-size: 10px; -fx-padding: 4 8 4 8;");
-                deleteBtn.setStyle("-fx-font-size: 10px; -fx-padding: 4 8 4 8;");
+
                 completeBtn.setOnAction(e -> handleComplete(getTableView().getItems().get(getIndex())));
                 noShowBtn.setOnAction(e -> handleNoShow(getTableView().getItems().get(getIndex())));
                 cancelBtn.setOnAction(e -> handleCancel(getTableView().getItems().get(getIndex())));

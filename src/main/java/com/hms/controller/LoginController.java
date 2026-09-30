@@ -1,3 +1,4 @@
+
 package com.hms.controller;
 
 import com.hms.model.User;
@@ -5,20 +6,15 @@ import com.hms.service.AuthService;
 import com.hms.util.DialogUtil;
 import com.hms.util.IconFactory;
 import com.hms.util.ValidationException;
-import com.hms.view.BlueprintBackgroundPainter;
 import com.hms.view.SceneManager;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 
 public class LoginController {
 
-    @FXML private Canvas backgroundCanvas;
-    @FXML private StackPane logoContainer;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private TextField passwordVisibleField;
@@ -30,33 +26,24 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-//        logoContainer.getChildren().add(IconFactory.gearCrossLogo(92, false));
-//        togglePasswordButton.setGraphic(IconFactory.eye(13, "icon-shape-dark"));
-//        bindBackgroundCanvasToParentSize();
-    }
+        // Starts with the slashed eye icon because password input is hidden by default
+        if (togglePasswordButton != null) {
+            togglePasswordButton.setGraphic(IconFactory.eyeSlash(17, "icon-shape-dark"));
+        }
 
-    /**
-     * The background canvas has no fixed size in FXML - it needs to track
-     * whatever size the root StackPane ends up at (which itself tracks the
-     * window), and repaint whenever that changes, since Canvas content
-     * doesn't automatically rescale like a resizable Node would.
-     */
-    private void bindBackgroundCanvasToParentSize() {
-        backgroundCanvas.widthProperty().addListener((obs, oldVal, newVal) -> repaintBackground());
-        backgroundCanvas.heightProperty().addListener((obs, oldVal, newVal) -> repaintBackground());
-
-        // Defer binding until the canvas is actually attached to a parent with a real size.
-        backgroundCanvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null && backgroundCanvas.getParent() instanceof javafx.scene.layout.StackPane parent) {
-                backgroundCanvas.widthProperty().bind(parent.widthProperty());
-                backgroundCanvas.heightProperty().bind(parent.heightProperty());
-            }
-        });
-    }
-
-    private void repaintBackground() {
-        BlueprintBackgroundPainter.paint(backgroundCanvas.getGraphicsContext2D(),
-                backgroundCanvas.getWidth(), backgroundCanvas.getHeight());
+        // Two-way sync between hidden password field and visible text field
+        if (passwordField != null && passwordVisibleField != null) {
+            passwordField.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (!passwordVisibleField.getText().equals(newVal)) {
+                    passwordVisibleField.setText(newVal);
+                }
+            });
+            passwordVisibleField.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (!passwordField.getText().equals(newVal)) {
+                    passwordField.setText(newVal);
+                }
+            });
+        }
     }
 
     @FXML
@@ -73,12 +60,6 @@ public class LoginController {
         }
     }
 
-    /**
-     * Toggles between the masked PasswordField and a plain TextField showing
-     * the same text. JavaFX's PasswordField can't reveal its own text, so
-     * the classic approach is two overlapping fields with only one visible
-     * at a time, kept in sync when swapping.
-     */
     @FXML
     private void handleTogglePasswordVisibility() {
         passwordVisible = !passwordVisible;
@@ -88,14 +69,20 @@ public class LoginController {
             passwordField.setManaged(false);
             passwordVisibleField.setVisible(true);
             passwordVisibleField.setManaged(true);
-            togglePasswordButton.setGraphic(IconFactory.eyeSlash(13, "icon-shape-dark"));
+            passwordVisibleField.requestFocus();
+            passwordVisibleField.positionCaret(passwordVisibleField.getText().length());
+            // Swaps to regular eye icon when password text is displayed in plain text
+            togglePasswordButton.setGraphic(IconFactory.eye(17, "icon-shape-dark"));
         } else {
             passwordField.setText(passwordVisibleField.getText());
             passwordVisibleField.setVisible(false);
             passwordVisibleField.setManaged(false);
             passwordField.setVisible(true);
             passwordField.setManaged(true);
-            togglePasswordButton.setGraphic(IconFactory.eye(13, "icon-shape-dark"));
+            passwordField.requestFocus();
+            passwordField.positionCaret(passwordField.getText().length());
+            // Swaps to slashed eye icon when password text is masked again
+            togglePasswordButton.setGraphic(IconFactory.eyeSlash(17, "icon-shape-dark"));
         }
     }
 

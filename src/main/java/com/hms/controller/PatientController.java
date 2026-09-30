@@ -1,3 +1,4 @@
+
 package com.hms.controller;
 
 import com.hms.model.Patient;
@@ -25,6 +26,7 @@ public class PatientController {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> genderFilter;
     @FXML private ComboBox<String> bloodGroupFilter;
+    @FXML private ComboBox<String> sortFilter; // Dropdown សម្រាប់ Sorting
     @FXML private Label resultCountLabel;
     @FXML private TableView<Patient> patientTable;
     @FXML private TableColumn<Patient, String> colCode;
@@ -58,29 +60,91 @@ public class PatientController {
         colRoom.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 data.getValue().isAdmitted() ? data.getValue().getRoomCode() : "-"));
         addActionButtons();
-        prevPageButton.setGraphic(IconFactory.chevronLeft(11, "icon-shape-dark"));
-        nextPageButton.setGraphic(IconFactory.chevronRight(11, "icon-shape-dark"));
-        nextPageButton.setContentDisplay(javafx.scene.control.ContentDisplay.RIGHT);
 
-        genderFilter.getItems().addAll("All", "Male", "Female", "Other");
+        if (prevPageButton != null) {
+            prevPageButton.setGraphic(IconFactory.chevronLeft(11, "icon-shape-dark"));
+        }
+        if (nextPageButton != null) {
+            nextPageButton.setGraphic(IconFactory.chevronRight(11, "icon-shape-dark"));
+            nextPageButton.setContentDisplay(javafx.scene.control.ContentDisplay.RIGHT);
+        }
+
+        // Initialize Filter Items
+        genderFilter.getItems().setAll("All", "Male", "Female", "Other");
         genderFilter.setValue("All");
-        bloodGroupFilter.getItems().addAll("All", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+
+        bloodGroupFilter.getItems().setAll("All", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
         bloodGroupFilter.setValue("All");
-        pageSizeCombo.getItems().addAll(8, 15, 25, 50);
-        pageSizeCombo.setValue(pageSize);
+
+        // Initialize Sort Items (ប្រសិនបើ FXML មាន ComboBox sortFilter)
+        if (sortFilter != null) {
+            sortFilter.getItems().setAll(
+                    "Name (A-Z)",
+                    "Name (Z-A)",
+                    "Age (Youngest)",
+                    "Age (Oldest)",
+                    "Patient ID"
+            );
+            sortFilter.setValue("Name (A-Z)");
+            sortFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
+                currentPage = 0;
+                refresh();
+            });
+        }
+
+        if (pageSizeCombo != null) {
+            pageSizeCombo.getItems().setAll(8, 15, 25, 50);
+            pageSizeCombo.setValue(pageSize);
+            pageSizeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    pageSize = newVal;
+                    currentPage = 0;
+                    refresh();
+                }
+            });
+        }
+
+        // ចង Listener ដោយផ្ទាល់ - User រើស Filter ឬវាយ Search ភ្លាម រត់ Refresh ភ្លាម
+        genderFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
+            currentPage = 0;
+            refresh();
+        });
+
+        bloodGroupFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
+            currentPage = 0;
+            refresh();
+        });
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            currentPage = 0;
+            refresh();
+        });
 
         patientTable.setItems(patients);
         refresh();
     }
 
     private void refresh() {
-        Page<Patient> page = patientService.search(searchField.getText(), genderFilter.getValue(),
-                bloodGroupFilter.getValue(), currentPage, pageSize);
+        String keyword = searchField != null ? searchField.getText() : "";
+        String gender = genderFilter != null && genderFilter.getValue() != null ? genderFilter.getValue() : "All";
+        String blood = bloodGroupFilter != null && bloodGroupFilter.getValue() != null ? bloodGroupFilter.getValue() : "All";
+        String sortBy = sortFilter != null && sortFilter.getValue() != null ? sortFilter.getValue() : "Name (A-Z)";
+
+        Page<Patient> page = patientService.search(keyword, gender, blood, sortBy, currentPage, pageSize);
         patients.setAll(page.items());
-        resultCountLabel.setText(page.totalItems() + " patient(s)");
-        pageInfoLabel.setText("Page " + (page.pageIndex() + 1) + " of " + page.totalPages());
-        prevPageButton.setDisable(!page.hasPrevious());
-        nextPageButton.setDisable(!page.hasNext());
+
+        if (resultCountLabel != null) {
+            resultCountLabel.setText(page.totalItems() + " patient(s)");
+        }
+        if (pageInfoLabel != null) {
+            pageInfoLabel.setText("Page " + (page.pageIndex() + 1) + " of " + Math.max(1, page.totalPages()));
+        }
+        if (prevPageButton != null) {
+            prevPageButton.setDisable(!page.hasPrevious());
+        }
+        if (nextPageButton != null) {
+            nextPageButton.setDisable(!page.hasNext());
+        }
     }
 
     @FXML
@@ -111,9 +175,11 @@ public class PatientController {
 
     @FXML
     private void handlePageSizeChanged() {
-        pageSize = pageSizeCombo.getValue();
-        currentPage = 0;
-        refresh();
+        if (pageSizeCombo != null && pageSizeCombo.getValue() != null) {
+            pageSize = pageSizeCombo.getValue();
+            currentPage = 0;
+            refresh();
+        }
     }
 
     @FXML
@@ -136,8 +202,12 @@ public class PatientController {
             return;
         }
         try {
-            Page<Patient> all = patientService.search(searchField.getText(), genderFilter.getValue(),
-                    bloodGroupFilter.getValue(), 0, Integer.MAX_VALUE);
+            String keyword = searchField != null ? searchField.getText() : "";
+            String gender = genderFilter != null && genderFilter.getValue() != null ? genderFilter.getValue() : "All";
+            String blood = bloodGroupFilter != null && bloodGroupFilter.getValue() != null ? bloodGroupFilter.getValue() : "All";
+            String sortBy = sortFilter != null && sortFilter.getValue() != null ? sortFilter.getValue() : "Name (A-Z)";
+
+            Page<Patient> all = patientService.search(keyword, gender, blood, sortBy, 0, Integer.MAX_VALUE);
             excelExportService.exportPatients(all.items(), file);
             DialogUtil.showInfo("Export Complete", all.items().size() + " patient(s) exported to:\n" + file.getAbsolutePath());
         } catch (IOException e) {
@@ -187,9 +257,9 @@ public class PatientController {
                 roomBtn.getStyleClass().add("btn-secondary");
                 editBtn.getStyleClass().add("btn-secondary");
                 deleteBtn.getStyleClass().add("btn-danger");
-                roomBtn.setStyle("-fx-font-size: 11px; -fx-padding: 5 10 5 10;");
-                editBtn.setStyle("-fx-font-size: 11px; -fx-padding: 5 10 5 10;");
-                deleteBtn.setStyle("-fx-font-size: 11px; -fx-padding: 5 10 5 10;");
+                roomBtn.setStyle("-fx-font-size: 11px; -fx-padding: 4 8 4 8;");
+                editBtn.setStyle("-fx-font-size: 11px; -fx-padding: 4 8 4 8;");
+                deleteBtn.setStyle("-fx-font-size: 11px; -fx-padding: 4 8 4 8;");
                 roomBtn.setOnAction(e -> handleRoom(getTableView().getItems().get(getIndex())));
                 editBtn.setOnAction(e -> handleEdit(getTableView().getItems().get(getIndex())));
                 deleteBtn.setOnAction(e -> handleDelete(getTableView().getItems().get(getIndex())));

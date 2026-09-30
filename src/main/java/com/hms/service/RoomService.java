@@ -1,3 +1,4 @@
+
 package com.hms.service;
 
 import com.hms.model.Room;
@@ -18,6 +19,11 @@ public class RoomService {
 
     public List<Room> getAvailableRooms() {
         return roomRepository.findAvailable();
+    }
+
+    /** Multi-criteria filtered and sorted search */
+    public List<Room> search(String keyword, String typeFilter, String availabilityFilter, String sortBy) {
+        return roomRepository.search(keyword, typeFilter, availabilityFilter, sortBy);
     }
 
     public Optional<Room> findById(int id) {
@@ -45,7 +51,6 @@ public class RoomService {
         return roomRepository.countTotal();
     }
 
-    /** Admits a patient into a room, refusing if the room is already at capacity. */
     public void admitPatient(int patientId, int roomId) throws ValidationException {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalStateException("Room not found."));
@@ -56,7 +61,6 @@ public class RoomService {
         roomRepository.assignPatient(patientId, roomId);
     }
 
-    /** Discharges a patient, freeing up their bed. */
     public void dischargePatient(int patientId) {
         roomRepository.releasePatient(patientId);
     }

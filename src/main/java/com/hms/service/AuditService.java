@@ -1,3 +1,4 @@
+
 package com.hms.service;
 
 import com.hms.model.AuditLog;
@@ -29,5 +30,10 @@ public class AuditService {
 
     public List<AuditLog> getRecent(int limit) {
         return auditLogRepository.findRecent(limit);
+    }
+
+    /** Filtered and sorted multi-parameter search */
+    public List<AuditLog> search(String keyword, String actionFilter, String sortBy, int limit) {
+        return auditLogRepository.search(keyword, actionFilter, sortBy, limit);
     }
 }

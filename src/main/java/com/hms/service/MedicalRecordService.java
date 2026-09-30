@@ -1,3 +1,4 @@
+
 package com.hms.service;
 
 import com.hms.model.MedicalRecord;
@@ -21,8 +22,14 @@ public class MedicalRecordService {
         return recordRepository.findByPatient(patientId);
     }
 
+    /** Filtered and sorted multi-parameter search */
+    public List<MedicalRecord> search(String keyword, String doctorFilter, String sortBy) {
+        return recordRepository.search(keyword, doctorFilter, sortBy);
+    }
+
+    // Overload for backward compatibility
     public List<MedicalRecord> search(String keyword) {
-        return recordRepository.search(keyword);
+        return recordRepository.search(keyword, "All Doctors", "Date (Newest)");
     }
 
     public Optional<MedicalRecord> findById(int id) {
@@ -31,7 +38,9 @@ public class MedicalRecordService {
 
     public MedicalRecord addRecord(MedicalRecord record) throws ValidationException {
         validate(record);
-        record.setRecordDate(LocalDate.now());
+        if (record.getRecordDate() == null) {
+            record.setRecordDate(LocalDate.now());
+        }
         return recordRepository.save(record);
     }
 
