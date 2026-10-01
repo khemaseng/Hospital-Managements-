@@ -46,12 +46,10 @@ public class AuthService {
         auditService.log("LOGIN", "User signed in");
         return user;
     }
-
     public void logout() {
         auditService.log("LOGOUT", "User signed out");
         SessionManager.getInstance().logout();
     }
-
     public User register(String username, String password, UserRole role, String fullName, String email)
             throws ValidationException {
         ValidationUtil.requireNonEmpty(username, "Username");

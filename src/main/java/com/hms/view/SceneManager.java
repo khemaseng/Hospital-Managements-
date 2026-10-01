@@ -1,3 +1,4 @@
+
 package com.hms.view;
 
 import com.hms.model.User;
@@ -7,12 +8,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Objects;
 
 /**
- * Owns the primary Stage and knows how to swap between the Login scene and
- * the main application shell (sidebar + topbar + content). Centralizing
- * this here means controllers never touch Stage directly.
+ * Owns the primary Stage and handles screen swapping (Login vs Main App Shell)
+ * as well as global light/dark theme switching across all views and dialogs.
  */
 public final class SceneManager {
 
@@ -45,6 +46,7 @@ public final class SceneManager {
             applyTheme(scene);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Hospital Management System - Sign In");
+            primaryStage.setMaximized(false);
             primaryStage.centerOnScreen();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load login screen.", e);
@@ -58,27 +60,52 @@ public final class SceneManager {
             Scene scene = new Scene(root, 1280, 800);
             applyTheme(scene);
             primaryStage.setScene(scene);
-            primaryStage.setTitle("Hospital Management System - " + user.getFullName());
+            primaryStage.setTitle("Hospital Management System - " + (user != null ? user.getFullName() : "Admin"));
             primaryStage.setMaximized(true);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load main dashboard.", e);
         }
     }
 
+    /**
+     * Toggles between Light and Dark mode on the primary stage.
+     */
     public void toggleDarkMode() {
         darkMode = !darkMode;
-        applyTheme(primaryStage.getScene());
+        if (primaryStage != null && primaryStage.getScene() != null) {
+            applyTheme(primaryStage.getScene());
+        }
     }
 
     public boolean isDarkMode() {
         return darkMode;
     }
 
+    /**
+     * Public method to allow modal dialogs and alerts (e.g., in DialogUtil)
+     * to inherit the current theme.
+     */
+    public void applyCurrentTheme(Scene scene) {
+        if (scene != null) {
+            applyTheme(scene);
+        }
+    }
+
     private void applyTheme(Scene scene) {
+        if (scene == null) return;
+
         scene.getStylesheets().clear();
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(APP_CSS)).toExternalForm());
+
+        URL appCssUrl = getClass().getResource(APP_CSS);
+        if (appCssUrl != null) {
+            scene.getStylesheets().add(appCssUrl.toExternalForm());
+        }
+
         if (darkMode) {
-            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(DARK_CSS)).toExternalForm());
+            URL darkCssUrl = getClass().getResource(DARK_CSS);
+            if (darkCssUrl != null) {
+                scene.getStylesheets().add(darkCssUrl.toExternalForm());
+            }
         }
     }
 

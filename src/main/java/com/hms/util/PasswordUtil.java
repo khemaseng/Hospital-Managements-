@@ -11,11 +11,9 @@ public final class PasswordUtil {
 
     private PasswordUtil() {
     }
-
     public static String hash(String plainTextPassword) {
         return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt(12));
     }
-
     public static boolean verify(String plainTextPassword, String hashedPassword) {
         if (plainTextPassword == null || hashedPassword == null) {
             return false;

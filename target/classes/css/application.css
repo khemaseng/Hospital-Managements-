@@ -297,7 +297,7 @@
 }
 
 /* ===================================================
-   6. TABLE VIEW, CRISP BORDERS & ACTION BUTTONS
+   6. TABLE VIEW (GREEN LINE REMOVED)
    =================================================== */
 .table-view {
     -fx-background-color: -fx-surface;
@@ -350,6 +350,7 @@
     -fx-max-height: 0;
 }
 
+/* Row states */
 .table-row-cell {
     -fx-background-color: -fx-surface;
     -fx-border-color: transparent transparent #e2e8f0 transparent;
@@ -360,14 +361,18 @@
     -fx-background-color: #f8fafc;
 }
 
-.table-row-cell:selected {
-    -fx-background-color: #e6f6f3;
+/* Clean, subtle slate-gray selection (GREEN HIGHLIGHT REMOVED) */
+.table-row-cell:selected,
+.table-row-cell:selected:focused {
+    -fx-background-color: #f1f5f9 !important;
 }
 
+/* Base Cell */
 .table-cell {
     -fx-padding: 6 8 6 8;
     -fx-alignment: CENTER_LEFT;
     -fx-border-color: transparent;
+    -fx-text-fill: #1e293b;
     -fx-text-overrun: clip;
 }
 
@@ -375,10 +380,22 @@
     -fx-alignment: CENTER;
 }
 
+/* Text stays clear dark charcoal on selected row */
+.table-row-cell:selected .table-cell,
+.table-row-cell:selected .text,
+.table-row-cell:selected .label,
+.table-cell:selected,
+.table-cell:selected .text,
+.table-cell:selected .label {
+    -fx-fill: #0f172a !important;
+    -fx-text-fill: #0f172a !important;
+    -fx-font-weight: 600;
+}
+
 /* Compact, unclipped table action buttons */
 .table-cell .button {
     -fx-background-color: -fx-surface;
-    -fx-text-fill: #475569;
+    -fx-text-fill: #475569 !important;
     -fx-border-color: #cbd5e1;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
@@ -398,7 +415,7 @@
 .table-cell .btn-danger,
 .table-cell .button.btn-danger {
     -fx-background-color: #fef2f2;
-    -fx-text-fill: #dc2626;
+    -fx-text-fill: #dc2626 !important;
     -fx-border-color: #fecaca;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
@@ -421,12 +438,12 @@
     -fx-text-alignment: center;
 }
 
-.badge-patient   { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1; }
-.badge-doctor    { -fx-background-color: #f3e8ff; -fx-text-fill: #7e22ce; }
-.badge-scheduled { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1; }
-.badge-completed { -fx-background-color: #dcfce7; -fx-text-fill: #15803d; }
-.badge-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #b91c1c; }
-.badge-noshow    { -fx-background-color: #fef3c7; -fx-text-fill: #92400e; }
+.badge-patient   { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1 !important; }
+.badge-doctor    { -fx-background-color: #f3e8ff; -fx-text-fill: #7e22ce !important; }
+.badge-scheduled { -fx-background-color: #e0f2fe; -fx-text-fill: #0369a1 !important; }
+.badge-completed { -fx-background-color: #dcfce7; -fx-text-fill: #15803d !important; }
+.badge-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #b91c1c !important; }
+.badge-noshow    { -fx-background-color: #fef3c7; -fx-text-fill: #92400e !important; }
 
 /* ===================================================
    8. VECTOR ICON STROKES & MISC

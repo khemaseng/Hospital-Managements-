@@ -140,7 +140,7 @@ public class MedicalRecordController {
             private final HBox box = new HBox(6, editBtn, deleteBtn);
 
             {
-                box.setAlignment(javafx.geometry.Pos.CENTER); // ឱ្យប្រអប់ប៊ូតុងនៅចំកណ្តាល
+                box.setAlignment(javafx.geometry.Pos.CENTER);
                 editBtn.getStyleClass().add("btn-secondary");
                 deleteBtn.getStyleClass().add("btn-danger");
                 editBtn.setStyle("-fx-font-size: 11px; -fx-padding: 4 10 4 10;");
