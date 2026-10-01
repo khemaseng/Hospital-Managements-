@@ -12,30 +12,23 @@ import java.util.List;
 import java.util.Optional;
 
 public class AppointmentService {
-
     private final AppointmentRepository appointmentRepository = new AppointmentRepository();
-
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
-
     public List<Appointment> getAppointmentsForDate(LocalDate date) {
         return appointmentRepository.findByDate(date);
     }
-
     public List<Appointment> search(String keyword, String statusFilter, String sortBy) {
         return appointmentRepository.search(keyword, statusFilter, sortBy);
     }
-
     // Overload for backward compatibility
     public List<Appointment> search(String keyword, String statusFilter) {
         return appointmentRepository.search(keyword, statusFilter, "Date (Newest)");
     }
-
     public Optional<Appointment> findById(int id) {
         return appointmentRepository.findById(id);
     }
-
     public Appointment bookAppointment(Appointment appointment) throws ValidationException {
         validate(appointment);
         if (appointmentRepository.hasConflict(appointment.getDoctorId(), appointment.getAppointmentDate(),
@@ -47,7 +40,6 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.SCHEDULED);
         return appointmentRepository.save(appointment);
     }
-
     public void reschedule(int appointmentId, int doctorId, LocalDate newDate, LocalTime newTime)
             throws ValidationException {
         ValidationUtil.validateAppointmentDate(newDate);
@@ -56,15 +48,12 @@ public class AppointmentService {
         }
         appointmentRepository.reschedule(appointmentId, newDate, newTime);
     }
-
     public void updateStatus(int appointmentId, AppointmentStatus status) {
         appointmentRepository.updateStatus(appointmentId, status);
     }
-
     public void cancelAppointment(int appointmentId) {
         appointmentRepository.updateStatus(appointmentId, AppointmentStatus.CANCELLED);
     }
-
     public void deleteAppointment(int id) {
         appointmentRepository.deleteById(id);
     }
@@ -76,7 +65,6 @@ public class AppointmentService {
     public int countToday() {
         return appointmentRepository.countToday();
     }
-
     private void validate(Appointment a) throws ValidationException {
         if (a.getPatientId() <= 0) {
             throw new ValidationException("Please select a patient.");

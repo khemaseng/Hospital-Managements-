@@ -220,7 +220,6 @@ public class AppointmentRepository {
             throw new DataAccessException("Failed to reschedule appointment.", e);
         }
     }
-
     public void deleteById(int id) {
         String sql = "DELETE FROM appointments WHERE id = ?";
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
@@ -230,7 +229,6 @@ public class AppointmentRepository {
             throw new DataAccessException("Failed to delete appointment.", e);
         }
     }
-
     public int countTotal() {
         return countWhere("SELECT COUNT(*) AS cnt FROM appointments");
     }
@@ -246,7 +244,6 @@ public class AppointmentRepository {
             throw new DataAccessException("Failed to count today's appointments.", e);
         }
     }
-
     private int countWhere(String sql) {
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -255,7 +252,6 @@ public class AppointmentRepository {
             throw new DataAccessException("Failed to count appointments.", e);
         }
     }
-
     private Appointment map(ResultSet rs) throws SQLException {
         Appointment a = new Appointment();
         a.setId(rs.getInt("id"));

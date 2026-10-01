@@ -64,7 +64,7 @@
     -fx-border-color: -fx-accent;
 }
 
-/* Completely strip inner border, background, and focus glow to eliminate double-border */
+/* Strip inner border, background, and focus glow to eliminate double borders */
 .input-with-icon .text-field,
 .input-with-icon .password-field,
 .input-borderless,
@@ -180,12 +180,11 @@
 /* ===================================================
    4. DASHBOARD & CARDS
    =================================================== */
-/* Clean Medium-Gray Heading with Lexend Font */
 .built-by-heading {
     -fx-font-family: "Lexend", "Segoe UI Variable Display", "Segoe UI", sans-serif;
     -fx-font-size: 19px;
     -fx-font-weight: 700;
-    -fx-text-fill: #64748b !important; /* Soft Slate Gray - never solid black */
+    -fx-text-fill: #64748b !important;
 }
 
 .card {
@@ -298,33 +297,35 @@
 }
 
 /* ===================================================
-   6. TABLE VIEW & CENTERED ALIGNMENTS
+   6. TABLE VIEW, CRISP BORDERS & ACTION BUTTONS
    =================================================== */
 .table-view {
     -fx-background-color: -fx-surface;
-    -fx-background-radius: 12;
-    -fx-border-color: -fx-border-soft;
-    -fx-border-radius: 12;
+    -fx-background-radius: 10;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 10;
+    -fx-border-width: 1.2px;
     -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.05), 8, 0, 0, 2);
 }
 
 .table-view .column-header-background {
     -fx-background-color: #f8fafc;
-    -fx-background-radius: 12 12 0 0;
-    -fx-border-color: transparent transparent -fx-border-soft transparent;
-    -fx-border-width: 0 0 1 0;
+    -fx-background-radius: 10 10 0 0;
+    -fx-border-color: transparent transparent #cbd5e1 transparent;
+    -fx-border-width: 0 0 1.2px 0;
     -fx-padding: 0;
 }
 
 .table-view .column-header {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-size: 38px;
+    -fx-size: 40px;
     -fx-padding: 0 8 0 8;
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: -fx-text-muted;
+    -fx-text-fill: #475569;
     -fx-font-weight: 700;
     -fx-font-size: 11px;
     -fx-alignment: CENTER_LEFT;
@@ -339,6 +340,7 @@
 
 .table-view .filler {
     -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
 .table-view .scroll-bar:horizontal {
@@ -350,8 +352,8 @@
 
 .table-row-cell {
     -fx-background-color: -fx-surface;
-    -fx-border-color: transparent transparent #f1f5f9 transparent;
-    -fx-border-width: 0 0 1 0;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+    -fx-border-width: 0 0 1px 0;
 }
 
 .table-row-cell:hover {
@@ -366,10 +368,45 @@
     -fx-padding: 6 8 6 8;
     -fx-alignment: CENTER_LEFT;
     -fx-border-color: transparent;
+    -fx-text-overrun: clip;
 }
 
 .table-cell.col-center {
     -fx-alignment: CENTER;
+}
+
+/* Compact, unclipped table action buttons */
+.table-cell .button {
+    -fx-background-color: -fx-surface;
+    -fx-text-fill: #475569;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-border-width: 1px;
+    -fx-padding: 3 6 3 6;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-wrap-text: false;
+    -fx-text-overrun: clip;
+}
+
+.table-cell .button:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.table-cell .btn-danger,
+.table-cell .button.btn-danger {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+    -fx-border-color: #fecaca;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.table-cell .btn-danger:hover,
+.table-cell .button.btn-danger:hover {
+    -fx-background-color: #fee2e2;
 }
 
 /* ===================================================

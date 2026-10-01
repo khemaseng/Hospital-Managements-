@@ -70,7 +70,7 @@ public class DashboardController {
 
         // Sets the clean dark-gray credit label instead of the default greeting
         if (greetingLabel != null) {
-            greetingLabel.setText("Built by Seng SilKhema");
+            greetingLabel.setText("Hospital Management System");
             greetingLabel.getStyleClass().setAll("built-by-heading");
         }
 

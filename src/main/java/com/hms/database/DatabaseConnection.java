@@ -19,20 +19,6 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Central point for obtaining JDBC connections and bootstrapping the schema.
- *
- * The system ships wired for SQLite (file-based, zero external setup) so the
- * project runs immediately after cloning. A MySQL-flavoured schema is also
- * provided (sql/mysql_schema.sql) and switching the connection target is a
- * one-line change — see docs/DATABASE_GUIDE.md for exact steps.
- *
- * A single shared connection is used because SQLite serializes writes
- * internally and this is a single-user desktop application; for a
- * true multi-connection pool (e.g. against MySQL in production) swap this
- * class's body for a HikariCP DataSource without touching any repository code,
- * since all repositories depend only on DatabaseConnection.getConnection().
- */
 public final class DatabaseConnection {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseConnection.class.getName());

@@ -65,7 +65,6 @@ public class AppointmentController {
             }
         });
         addActionButtons();
-
         // Populate Status Filters
         statusFilter.getItems().setAll("All", "SCHEDULED", "COMPLETED", "CANCELLED", "NO_SHOW");
         statusFilter.setValue("All");
@@ -80,7 +79,6 @@ public class AppointmentController {
         );
         sortFilter.setValue("Date (Newest)");
 
-        // ចង Listener ផ្ទាល់ដើម្បីឱ្យ Table ធ្វើបច្ចុប្បន្នភាពភ្លាមៗពេល User ចុចរើស
         statusFilter.valueProperty().addListener((obs, oldVal, newVal) -> refresh());
         sortFilter.valueProperty().addListener((obs, oldVal, newVal) -> refresh());
         searchField.textProperty().addListener((obs, oldVal, newVal) -> refresh());
